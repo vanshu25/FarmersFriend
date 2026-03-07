@@ -181,7 +181,6 @@ def add_synthetic_fallback(vectorstore):
     ]
     
     vectorstore.add_documents(synthetic_docs)
-    vectorstore.persist()
     print(f"  📌 Added {len(synthetic_docs)} synthetic fallback entries")
 
 

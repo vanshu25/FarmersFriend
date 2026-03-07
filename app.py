@@ -4,6 +4,7 @@
 
 import os
 import streamlit as st
+import streamlit.components.v1 as components
 from PIL import Image
 import io
 
@@ -53,6 +54,13 @@ st.markdown("""
     background-color: #ffffff !important;
     border: 1.5px solid #ccc !important;
     border-radius: 10px !important;
+  }
+  /* Back button — small and compact */
+  .stButton > button[kind="secondary"] {
+    padding: 4px 14px !important;
+    min-height: unset !important;
+    font-size: 13px !important;
+    line-height: 1.4 !important;
   }
 
   .stButton > button:hover {
@@ -131,6 +139,10 @@ st.markdown("""
   .stSidebar, .stSidebar p, .stSidebar div, .stSidebar label {
     color: #1a1a1a !important;
   }
+
+
+
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -177,59 +189,259 @@ def severity_badge(level: str) -> str:
     color, bg = SEVERITY_COLORS.get(level, ("#333", "#eee"))
     return f'<span style="background:{bg};color:{color};padding:4px 14px;border-radius:20px;font-weight:700;font-size:14px;">{level}</span>'
 
+# ── Helper: navigate to animal dialogue ──────────────────────────────────────
+
+def select_animal(animal_key: str):
+    st.session_state.selected_animal = animal_key
+    st.session_state.questions = get_questions_for_animal(animal_key)
+    st.session_state.current_question = 0
+    st.session_state.answers = {}
+    st.session_state.screen = "dialogue"
+
 # ═════════════════════════════════════════════════════════════════════════════
 # SCREEN 1: HOME — Animal Selection
 # ═════════════════════════════════════════════════════════════════════════════
 
 def screen_home():
-    # Header
-    st.markdown("""
-    <div style="text-align:center; padding: 20px 0 8px 0;">
-      <div style="font-size:48px; margin-bottom:8px;">🌾</div>
-      <h1 style="font-size:32px; font-weight:800; color:#2d4a1e; margin:0;">FarmGuard AI</h1>
-      <p style="color:#6b7c61; font-size:15px; margin-top:6px;">
-        Livestock health guidance for farmers — tap your animal to get started
-      </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Judge mode toggle
     with st.sidebar:
         st.markdown("### ⚙️ Settings")
         st.session_state.judge_mode = st.toggle("Judge mode (no live API)", value=st.session_state.judge_mode)
         st.session_state.vet_email = st.text_input("Vet email address", value=st.session_state.vet_email)
         st.markdown("---")
-        st.markdown("**About FarmGuard AI**")
+        st.markdown("**About Farmer's Friend**")
         st.markdown("RAG-powered livestock triage. Backed by Illinois Extension & USDA docs.")
         if st.session_state.judge_mode:
             st.info("🧪 Judge mode: Uses cached responses, no API key needed.")
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.markdown("#### Which animal needs attention?")
-    
-    # Animal cards in a 2x2 grid
+    # ── Full page farm CSS + background scene ────────────────────────────────
+    st.markdown("""
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap');
+      #MainMenu, footer, header { visibility: hidden; }
+
+      .stApp {
+        background: linear-gradient(180deg, #87CEEB 0%, #b8e4f7 35%, #c8efc0 60%, #8bc34a 100%) !important;
+      }
+      .farm-scene {
+        position: fixed; top:0; left:0; right:0; bottom:0;
+        pointer-events: none; z-index:0; overflow:hidden;
+      }
+      /* SUN */
+      .sun { position:absolute; top:40px; right:80px; width:70px; height:70px;
+        background:radial-gradient(circle,#FFE44D 60%,#FFD700 100%); border-radius:50%;
+        box-shadow:0 0 30px 10px rgba(255,228,77,0.4); animation:sunPulse 4s ease-in-out infinite; }
+      @keyframes sunPulse {
+        0%,100%{box-shadow:0 0 30px 10px rgba(255,228,77,0.4);}
+        50%{box-shadow:0 0 50px 20px rgba(255,228,77,0.6);}
+      }
+      /* CLOUDS */
+      .cloud{position:absolute;background:white;border-radius:50px;opacity:0.88;}
+      .cloud::before,.cloud::after{content:'';position:absolute;background:white;border-radius:50%;}
+      .cloud-1{width:120px;height:38px;top:60px;left:-140px;animation:cf1 28s linear infinite;}
+      .cloud-1::before{width:60px;height:60px;top:-30px;left:15px;}
+      .cloud-1::after{width:40px;height:40px;top:-20px;left:55px;}
+      .cloud-2{width:90px;height:28px;top:100px;left:-110px;animation:cf2 36s linear infinite 8s;opacity:0.75;}
+      .cloud-2::before{width:45px;height:45px;top:-22px;left:10px;}
+      .cloud-2::after{width:30px;height:30px;top:-15px;left:40px;}
+      .cloud-3{width:150px;height:44px;top:30px;left:-180px;animation:cf3 40s linear infinite 4s;}
+      .cloud-3::before{width:70px;height:70px;top:-35px;left:20px;}
+      .cloud-3::after{width:50px;height:50px;top:-25px;left:70px;}
+      .cloud-4{width:80px;height:24px;top:140px;left:-100px;animation:cf1 32s linear infinite 15s;opacity:0.65;}
+      .cloud-4::before{width:38px;height:38px;top:-18px;left:8px;}
+      .cloud-4::after{width:28px;height:28px;top:-14px;left:35px;}
+      @keyframes cf1{from{left:-140px;}to{left:110%;}}
+      @keyframes cf2{from{left:-110px;}to{left:110%;}}
+      @keyframes cf3{from{left:-180px;}to{left:110%;}}
+      /* BIRDS */
+      .bird{position:absolute;animation:birdFly linear infinite;opacity:0.85;}
+      .bird-1{top:80px;font-size:14px;left:-40px;animation-duration:22s;animation-delay:2s;}
+      .bird-2{top:110px;font-size:10px;left:-40px;animation-duration:26s;animation-delay:9s;}
+      .bird-3{top:55px;font-size:16px;left:-40px;animation-duration:30s;animation-delay:16s;}
+      @keyframes birdFly{
+        0%{left:-60px;transform:scaleX(1);}49%{transform:scaleX(1);}
+        50%{left:110%;transform:scaleX(-1);}100%{left:-60px;transform:scaleX(-1);}
+      }
+      /* HILLS */
+      .hills{position:absolute;bottom:0;left:0;right:0;height:200px;}
+      .hill-back{position:absolute;bottom:80px;left:-5%;right:-5%;height:160px;
+        background:#6baa3a;border-radius:50% 50% 0 0/100% 100% 0 0;}
+      .hill-front{position:absolute;bottom:0;left:-10%;right:-10%;height:120px;
+        background:#7bc142;border-radius:60% 40% 0 0/100% 100% 0 0;}
+      /* FENCE */
+      .fence-full{position:absolute;bottom:83px;left:0;right:0;height:40px;
+        background:repeating-linear-gradient(90deg,#8B6914 0px,#8B6914 10px,transparent 10px,transparent 38px);}
+      .fence-full::before{content:'';position:absolute;top:6px;left:0;right:0;height:6px;background:#A0782A;border-radius:3px;}
+      .fence-full::after{content:'';position:absolute;top:18px;left:0;right:0;height:6px;background:#A0782A;border-radius:3px;}
+      /* FLOWERS */
+      .flower{position:absolute;bottom:100px;font-size:20px;animation:flowerSway 3s ease-in-out infinite;}
+      @keyframes flowerSway{0%,100%{transform:rotate(-5deg);}50%{transform:rotate(5deg);}}
+      /* SCARECROW */
+      .scarecrow{position:absolute;bottom:108px;right:60px;font-size:52px;
+        animation:scarecrowWave 4s ease-in-out infinite;transform-origin:bottom center;
+        filter:drop-shadow(2px 2px 4px rgba(0,0,0,0.2));}
+      @keyframes scarecrowWave{0%,100%{transform:rotate(-3deg);}25%{transform:rotate(4deg);}75%{transform:rotate(-5deg);}}
+      /* BARN & TREES */
+      .barn{position:absolute;bottom:103px;left:30px;font-size:72px;
+        filter:drop-shadow(3px 3px 6px rgba(0,0,0,0.25));opacity:0.9;}
+      .tree{position:absolute;bottom:98px;font-size:52px;filter:drop-shadow(2px 2px 3px rgba(0,0,0,0.15));}
+      /* WALKING ANIMALS */
+      .walk-animal{position:absolute;bottom:92px;animation:walkAcross linear infinite;
+        filter:drop-shadow(1px 1px 2px rgba(0,0,0,0.15));}
+      .walk-cow-1{font-size:30px;bottom:90px;animation-duration:18s;animation-delay:0s;}
+      .walk-cow-2{font-size:24px;bottom:88px;animation-duration:24s;animation-delay:6s;}
+      .walk-chick-1{font-size:20px;bottom:90px;animation-duration:12s;animation-delay:3s;}
+      .walk-chick-2{font-size:18px;bottom:89px;animation-duration:15s;animation-delay:9s;}
+      .walk-pig{font-size:26px;bottom:90px;animation-duration:20s;animation-delay:11s;}
+      .walk-sheep{font-size:24px;bottom:89px;animation-duration:22s;animation-delay:1s;}
+      @keyframes walkAcross{
+        0%{left:-60px;transform:scaleX(1);}49%{left:110%;transform:scaleX(1);}
+        50%{left:110%;transform:scaleX(-1);}99%{left:-60px;transform:scaleX(-1);}
+        100%{left:-60px;transform:scaleX(1);}
+      }
+
+      /* ── HERO CARD ── */
+      .hero-card{
+        position:relative;z-index:10;
+        background:rgba(255,255,255,0.82);backdrop-filter:blur(12px);
+        border-radius:28px;border:2px solid rgba(255,255,255,0.9);
+        box-shadow:0 8px 32px rgba(80,120,40,0.18),0 2px 8px rgba(0,0,0,0.08);
+        padding:32px 28px 24px;text-align:center;margin-bottom:24px;
+        animation:heroEntrance 0.8s cubic-bezier(0.34,1.56,0.64,1) both;
+      }
+      @keyframes heroEntrance{
+        from{opacity:0;transform:translateY(30px) scale(0.95);}
+        to{opacity:1;transform:translateY(0) scale(1);}
+      }
+      .welcome-text{font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;
+        color:#5a8a3c;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;}
+      .farm-name{font-family:'Fredoka One',cursive;font-size:48px;color:#2d4a1e;
+        line-height:1.1;margin:0 0 4px;text-shadow:2px 2px 0 rgba(90,138,60,0.15);}
+      .stat-farm-label{font-family:'Nunito',sans-serif;font-size:20px;color:#7a9a6a;
+        font-weight:800;margin-bottom:6px;letter-spacing:0.05em;}
+      .tagline{font-family:'Nunito',sans-serif;font-size:18px;color:#5a7a45;font-weight:600;margin:0 0 8px;}
+      .subtagline{font-family:'Nunito',sans-serif;font-size:13px;color:#7a9a6a;margin:0;}
+
+      /* ── SECTION LABEL ── */
+      .animal-buttons-label{font-family:'Nunito',sans-serif;font-size:16px;font-weight:800;
+        color:#2d4a1e;text-align:center;margin:0 0 12px;position:relative;z-index:10;}
+
+      /* ── NATIVE ANIMAL CARD BUTTONS ── */
+      div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] > button {
+        position: relative !important;
+        z-index: 10 !important;
+        background: rgba(255,255,255,0.88) !important;
+        border: 2.5px solid rgba(90,138,60,0.2) !important;
+        border-radius: 20px !important;
+        padding: 18px 12px !important;
+        width: 100% !important;
+        min-height: 64px !important;
+        cursor: pointer !important;
+        transition: all 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
+        box-shadow: 0 4px 16px rgba(80,120,40,0.1) !important;
+        color: #2d4a1e !important;
+        font-family: 'Fredoka One', cursive !important;
+        font-size: 24px !important;
+        font-weight: 900 !important;
+        line-height: 1.2 !important;
+      }
+      /* Target inner <p> that Streamlit injects — this is what actually renders the text */
+      div[data-testid="stHorizontalBlock"] div[data-testid="stButton"] > button p {
+        font-family: 'Fredoka One', cursive !important;
+        font-size: 24px !important;
+        font-weight: 900 !important;
+        color: #2d4a1e !important;
+      }
+      div[data-testid="stHorizontalBlock"] div[data-testid="stButton"]:first-child > button:hover {
+        border-color: #5a8a3c !important;
+        background: rgba(240,247,236,0.97) !important;
+        transform: translateY(-4px) scale(1.03) !important;
+        box-shadow: 0 12px 28px rgba(80,120,40,0.22) !important;
+      }
+      div[data-testid="stHorizontalBlock"] div[data-testid="stButton"]:last-child > button:hover {
+        border-color: #DAA520 !important;
+        background: rgba(255,251,230,0.97) !important;
+        transform: translateY(-4px) scale(1.03) !important;
+        box-shadow: 0 12px 28px rgba(218,165,32,0.22) !important;
+      }
+
+      /* Info pill */
+      .info-pill{
+        position:relative;z-index:10;
+        background:rgba(255,255,255,0.75);backdrop-filter:blur(8px);
+        border:1.5px solid rgba(90,138,60,0.25);border-radius:16px;padding:12px 18px;
+        font-family:'Nunito',sans-serif;font-size:13px;color:#4a6a35;
+        text-align:center;margin-top:8px;box-shadow:0 2px 8px rgba(0,0,0,0.06);
+      }
+    </style>
+
+    <!-- FARM BACKGROUND -->
+    <div class="farm-scene">
+      <div class="sun"></div>
+      <div class="cloud cloud-1"></div><div class="cloud cloud-2"></div>
+      <div class="cloud cloud-3"></div><div class="cloud cloud-4"></div>
+      <div class="bird bird-1">🐦</div><div class="bird bird-2">🐦</div><div class="bird bird-3">🐦</div>
+      <div class="barn">🏚️</div>
+      <div class="tree" style="right:140px;font-size:60px;">🌳</div>
+      <div class="tree" style="right:200px;font-size:44px;bottom:91px;">🌲</div>
+      <div class="tree" style="left:145px;font-size:38px;">🌳</div>
+      <div class="scarecrow">🧑‍🌾</div>
+      <div class="flower" style="left:45%;animation-delay:0.3s;">🌻</div>
+      <div class="flower" style="left:30%;animation-delay:0.8s;font-size:16px;">🌸</div>
+      <div class="flower" style="left:55%;animation-delay:1.4s;font-size:16px;">🌼</div>
+      <div class="flower" style="left:22%;animation-delay:0.5s;font-size:14px;">🌺</div>
+      <div class="walk-animal walk-cow-1">🐄</div>
+      <div class="walk-animal walk-cow-2">🐄</div>
+      <div class="walk-animal walk-chick-1">🐔</div>
+      <div class="walk-animal walk-chick-2">🐓</div>
+      <div class="walk-animal walk-pig">🐖</div>
+      <div class="walk-animal walk-sheep">🐑</div>
+      <div class="hills"><div class="hill-back"></div><div class="hill-front"></div></div>
+      <div class="fence-full"></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # ── Hero Card ─────────────────────────────────────────────────────────────
+    st.markdown("""
+    <div class="hero-card">
+      <div class="welcome-text">Welcome to</div>
+      <div class="farm-name">Farmer's Friend</div>
+      <div class="stat-farm-label">StatFarm</div>
+      <div class="tagline">How can we help you today?</div>
+      <div class="subtagline">Select an animal below to begin your livestock health check.</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # st.markdown('<div class="animal-buttons-label">Who needs attention?</div>', unsafe_allow_html=True)
+
+    # ── Native Streamlit buttons styled as animal cards ───────────────────────
+    # These replace the previous components.html iframe — same visual style,
+    # but now they correctly trigger session state changes and st.rerun().
     col1, col2 = st.columns(2)
-    animal_keys = list(ANIMALS.keys())
-    
-    for i, animal_key in enumerate(animal_keys):
-        animal = ANIMALS[animal_key]
-        col = col1 if i % 2 == 0 else col2
-        with col:
-            if st.button(
-                f"{animal['emoji']}  **{animal['label']}**\n\n_{animal['description']}_",
-                key=f"animal_{i}",
-                use_container_width=True,
-            ):
-                st.session_state.selected_animal = animal_key
-                st.session_state.questions = get_questions_for_animal(animal_key)
-                st.session_state.current_question = 0
-                st.session_state.answers = {}
-                st.session_state.screen = "dialogue"
-                st.rerun()
-    
-    # Info footer
-    st.markdown("<br>", unsafe_allow_html=True)
-    st.info("💡 **How it works:** Answer a few quick questions, optionally add a photo, and FarmGuard will recommend what to do next — backed by agricultural extension knowledge.")
+
+    with col1:
+        if st.button(
+            "🐮  Cattle",
+            key="btn_cow",
+            use_container_width=True,
+        ):
+            select_animal("🐄 Cow")
+            st.rerun()
+
+    with col2:
+        if st.button(
+            "🐣  Chicken",
+            key="btn_chicken",
+            use_container_width=True,
+        ):
+            select_animal("🐔 Chicken")
+            st.rerun()
+
+    st.markdown("""
+    <div class="info-pill">
+      Answer a few quick questions, optionally snap a photo, and Farmer's Friend will recommend
+      what to do next — backed by agricultural extension knowledge.
+    </div>
+    """, unsafe_allow_html=True)
 
 
 # ═════════════════════════════════════════════════════════════════════════════
@@ -257,8 +469,8 @@ def screen_dialogue():
     
     st.progress(progress)
     
-    # Back button
-    col_back, col_spacer = st.columns([1, 4])
+    # Back button — rendered in a narrow column so it stays small
+    col_back, _ = st.columns([0.15, 0.85])
     with col_back:
         if st.button("← Back", key="back_btn"):
             if q_idx > 0:
