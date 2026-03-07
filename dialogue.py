@@ -71,17 +71,18 @@ COW_QUESTIONS = [
     },
     {
         "id": "abdomen",
-        "question": "Look at the cow's left side — does it look swollen or bloated?",
+        "question": "Look at the cow's left side — does it look swollen or bloated? (bloat is a buildup of gas in the rumen)",
         "type": "single",
         "options": [
             "Yes, visibly swollen on the left",
             "Slightly swollen, not sure",
             "No swelling"
-        ]
+        ],
+        "photo_hint": True
     },
     {
         "id": "respiratory",
-        "question": "Any breathing or nose symptoms? (select all that apply)",
+        "question": "Any respiratory symptoms — nasal discharge, coughing or breathing trouble? (select all that apply)",
         "type": "multi",
         "options": [
             "Coughing",
@@ -93,7 +94,7 @@ COW_QUESTIONS = [
     },
     {
         "id": "udder_milk",
-        "question": "Any changes with the udder or milk? (select all that apply)",
+        "question": "Any changes with the udder or milk? (udder is the milk gland between the hind legs — select all that apply)",
         "type": "multi",
         "options": [
             "Milk production suddenly dropped",
@@ -101,11 +102,12 @@ COW_QUESTIONS = [
             "Milk looks abnormal (clumps, watery, bloody)",
             "Sweet or unusual smell from breath",
             "None of these"
-        ]
+        ],
+        "photo_hint": True
     },
     {
         "id": "digestive_eyes",
-        "question": "Any of these visible? (select all that apply)",
+        "question": "Any of these visible? Includes tremors, lesions or eye symptoms (select all that apply)",
         "type": "multi",
         "options": [
             "Diarrhea",
@@ -114,21 +116,23 @@ COW_QUESTIONS = [
             "Kicking at belly or restless",
             "Muscle tremors or cold ears",
             "None of these"
-        ]
+        ],
+        "photo_hint": True
     },
 ]
 
 # Inserted dynamically only if cow is limping
 COW_HOOF_QUESTION = {
     "id": "hoof_signs",
-    "question": "Look closely at the hooves — what do you see? (select all that apply)",
+    "question": "Look closely at the hooves — any lesions, swelling or foul smell? (select all that apply)",
     "type": "multi",
     "options": [
         "Swelling between the toes",
         "Foul smell from hoof area",
         "Hoof looks cracked or damaged",
         "Nothing obvious"
-    ]
+    ],
+    "photo_hint": True
 }
 
 
@@ -641,4 +645,4 @@ def format_answers_for_prompt(animal_key: str, answers: dict) -> str:
         else:
             lines.append("\nNo strong condition match — full symptom review needed.")
 
-    return "\n".join(lines) 
+    return "\n".join(lines)
