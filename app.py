@@ -13,8 +13,7 @@ from alert import build_mailto_link, simulate_alert
 # ── Page config ───────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="FarmGuard AI",
-    page_icon="🌾",
+    page_title="Farmer's Friend",
     layout="centered",
     initial_sidebar_state="collapsed",
 )
@@ -202,7 +201,7 @@ def screen_home():
         st.markdown("**About FarmGuard AI**")
         st.markdown("RAG-powered livestock triage. Backed by Illinois Extension & USDA docs.")
         if st.session_state.judge_mode:
-            st.info("🧪 Judge mode: Uses cached responses, no API key needed.")
+            st.info("Judge mode: Uses cached responses, no API key needed.")
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown("#### Which animal needs attention?")
@@ -216,7 +215,7 @@ def screen_home():
         col = col1 if i % 2 == 0 else col2
         with col:
             if st.button(
-                f"{animal['emoji']}  **{animal['label']}**\n\n_{animal['description']}_",
+                f"  **{animal['label']}**\n\n_{animal['description']}_",
                 key=f"animal_{i}",
                 use_container_width=True,
             ):
@@ -247,7 +246,7 @@ def screen_dialogue():
     
     st.markdown(f"""
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
-      <span style="font-size:32px;">{animal['emoji']}</span>
+      <span style="font-size:32px;"></span>
       <div>
         <div style="font-weight:700; font-size:18px; color:#2d4a1e;">{animal['label']} Health Check</div>
         <div style="color:#6b7c61; font-size:13px;">Step {min(q_idx+1, total)} of {total}</div>
@@ -289,7 +288,7 @@ def screen_dialogue():
         if uploaded:
             st.session_state.uploaded_image = uploaded.read()
             img = Image.open(io.BytesIO(st.session_state.uploaded_image))
-            st.image(img, caption="Photo uploaded ✓", width=300)
+            st.image(img, caption="Photo uploaded", width=300)
         
         col_skip, col_analyze = st.columns([1, 2])
         with col_skip:
@@ -382,7 +381,7 @@ def screen_result():
     if st.session_state.triage_result is None:
         if st.session_state.judge_mode:
             import time
-            with st.spinner("🔍 Analyzing symptoms..."):
+            with st.spinner("Analyzing symptoms..."):
                 time.sleep(2)  # simulate API call in judge mode
             st.session_state.triage_result = JUDGE_MODE_CACHE
         else:
@@ -392,7 +391,7 @@ def screen_result():
                 st.session_state.answers,
             )
             
-            with st.spinner("🔍 Retrieving knowledge and analyzing symptoms..."):
+            with st.spinner("Retrieving knowledge and analyzing symptoms..."):
                 try:
                     from rag_chain import run_triage
                     result = run_triage(
@@ -401,12 +400,12 @@ def screen_result():
                     )
                     st.session_state.triage_result = result
                 except FileNotFoundError:
-                    st.error("⚠️ ChromaDB not found. Run `python ingest.py` first.")
+                    st.error("ChromaDB not found. Run `python ingest.py` first.")
                     if st.button("← Go back"):
                         go_home()
                     return
                 except Exception as e:
-                    st.error(f"⚠️ Error during analysis: {e}")
+                    st.error(f"Error during analysis: {e}")
                     if st.button("← Try again"):
                         st.session_state.triage_result = None
                         st.rerun()
@@ -419,7 +418,7 @@ def screen_result():
     # ── Header ────────────────────────────────────────────────────────────────
     st.markdown(f"""
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-      <span style="font-size:36px;">{animal['emoji']}</span>
+      <span style="font-size:36px;"></span>
       <div>
         <div style="font-weight:800; font-size:22px; color:#2d4a1e;">Triage Assessment</div>
         <div style="color:#6b7c61; font-size:13px;">{animal['label']} · AI-assisted recommendation</div>
@@ -432,7 +431,6 @@ def screen_result():
     st.markdown(f"""
     <div style="background:{sev_bg}; border:1px solid {sev_color}40; border-radius:12px; 
                 padding:14px 20px; margin:12px 0; display:flex; align-items:center; gap:12px;">
-      <span style="font-size:24px;">{"🚨" if severity in ["HIGH","CRITICAL"] else "⚠️" if severity == "MEDIUM" else "✅"}</span>
       <div>
         <div style="font-size:12px; color:{sev_color}; font-weight:600; letter-spacing:0.05em;">SEVERITY LEVEL</div>
         <div style="font-size:20px; font-weight:800; color:{sev_color};">{severity}</div>
@@ -463,7 +461,7 @@ def screen_result():
         """, unsafe_allow_html=True)
     
     # ── Immediate actions ─────────────────────────────────────────────────────
-    st.markdown("#### ✅ What to do right now")
+    st.markdown("#### What to do right now")
     for i, action in enumerate(r.get("immediate_actions", []), 1):
         st.markdown(f"""
         <div style="display:flex; gap:12px; align-items:flex-start; padding:8px 0; 
@@ -478,7 +476,7 @@ def screen_result():
     # ── Image observations (if photo was uploaded) ────────────────────────────
     img_obs = r.get("image_observations", "")
     if img_obs and img_obs != "No image provided" and st.session_state.uploaded_image:
-        st.markdown("#### 📸 Photo Analysis")
+        st.markdown("#### Photo Analysis")
         col_img, col_obs = st.columns([1, 2])
         with col_img:
             img = Image.open(io.BytesIO(st.session_state.uploaded_image))
@@ -495,14 +493,14 @@ def screen_result():
         st.markdown(f"""
         <div style="background:#f8f6f0; border-left:3px solid #aaa; border-radius:0 8px 8px 0;
                     padding:10px 14px; margin:12px 0; font-size:13px; color:#6b7c61;">
-          💭 <strong>Uncertainty:</strong> {r['uncertainty_note']}
+          <strong>Uncertainty:</strong> {r['uncertainty_note']}
         </div>
         """, unsafe_allow_html=True)
     
     # ── Sources ───────────────────────────────────────────────────────────────
     sources = r.get("cited_sources", [])
     if sources:
-        st.markdown("#### 📚 Sources used")
+        st.markdown("####Sources used")
         sources_html = " ".join(f'<span class="source-tag">{s}</span>' for s in sources)
         st.markdown(f'<div>{sources_html}</div>', unsafe_allow_html=True)
     
@@ -512,7 +510,7 @@ def screen_result():
         st.markdown("""
         <div style="background:#fff0f0; border:2px solid #dc3545; border-radius:14px; padding:20px;">
           <div style="font-size:18px; font-weight:800; color:#842029; margin-bottom:8px;">
-            🚨 Vet Consultation Recommended
+            Vet Consultation Recommended
           </div>
           <div style="color:#6b2737; font-size:13px; margin-bottom:16px;">
             Based on the severity of these symptoms, FarmGuard recommends contacting your veterinarian.
@@ -525,9 +523,9 @@ def screen_result():
         
         if st.session_state.judge_mode:
             # Judge mode: show simulated alert
-            if st.button("🚨 Alert Vet (Judge Mode — Simulated)", type="primary", use_container_width=True):
+            if st.button("Alert Vet (Judge Mode — Simulated)", type="primary", use_container_width=True):
                 sim = simulate_alert(animal["label"], severity, r.get("vet_summary", ""))
-                st.success(f"✅ {sim['message']}")
+                st.success(f"{sim['message']}")
                 st.code(sim["preview"])
         else:
             # Real mode: build mailto link
@@ -542,21 +540,21 @@ def screen_result():
             <a href="{mailto_link}" style="display:block; background:#dc3545; color:black; 
                text-align:center; padding:14px; border-radius:10px; font-weight:700; 
                font-size:16px; text-decoration:none; margin-bottom:12px;">
-              🚨 Alert Your Vet (Opens Email)
+              Alert Your Vet (Opens Email)
             </a>
             """, unsafe_allow_html=True)
             
-            with st.expander("👁️ Preview vet message"):
+            with st.expander("Preview vet message"):
                 st.text_area("Message preview:", value=r.get("vet_summary", ""), height=150, disabled=True)
     
     # ── Navigation ────────────────────────────────────────────────────────────
     st.markdown("<br>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
-        if st.button("🔄 Check another animal", use_container_width=True):
+        if st.button("Check another animal", use_container_width=True):
             go_home()
     with col2:
-        if st.button("📋 New check (same animal)", use_container_width=True):
+        if st.button("New check (same animal)", use_container_width=True):
             st.session_state.answers = {}
             st.session_state.current_question = 0
             st.session_state.triage_result = None
@@ -569,7 +567,7 @@ def screen_result():
     if st.session_state.judge_mode:
         st.markdown("""
         <div style="text-align:center; margin-top:20px; color:#999; font-size:12px;">
-          🧪 Judge mode active — responses use cached demo data
+          Judge mode active — responses use cached demo data
         </div>
         """, unsafe_allow_html=True)
 

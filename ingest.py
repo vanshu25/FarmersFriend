@@ -39,26 +39,26 @@ def load_documents():
     # Load PDFs from all subdirectories
     pdf_dirs = list(DATA_DIR.rglob("*.pdf"))
     if not pdf_dirs:
-        print("⚠️  No PDF files found in data/. Add Illinois Extension PDFs there.")
+        print("No PDF files found in data/. Add Illinois Extension PDFs there.")
         print("    Download from: https://extension.illinois.edu/livestock")
     else:
         for pdf_path in pdf_dirs:
-            print(f"  📄 Loading: {pdf_path.name}")
+            print(f"  Loading: {pdf_path.name}")
             try:
                 loader = PyPDFLoader(str(pdf_path))
                 docs.extend(loader.load())
             except Exception as e:
-                print(f"  ⚠️  Skipping {pdf_path.name}: {e}")
+                print(f"   Skipping {pdf_path.name}: {e}")
     
     # Load .txt files (e.g. scraped USDA pages)
     txt_files = list(DATA_DIR.rglob("*.txt"))
     for txt_path in txt_files:
-        print(f"  📝 Loading: {txt_path.name}")
+        print(f"  Loading: {txt_path.name}")
         try:
             loader = TextLoader(str(txt_path), encoding="utf-8")
             docs.extend(loader.load())
         except Exception as e:
-            print(f"  ⚠️  Skipping {txt_path.name}: {e}")
+            print(f"  Skipping {txt_path.name}: {e}")
     
     return docs
 
@@ -71,13 +71,13 @@ def chunk_documents(docs):
         separators=["\n\n", "\n", ". ", " ", ""],  # respect paragraph breaks
     )
     chunks = splitter.split_documents(docs)
-    print(f"\n  ✂️  Created {len(chunks)} chunks from {len(docs)} pages")
+    print(f"\n Created {len(chunks)} chunks from {len(docs)} pages")
     return chunks
 
 
 def build_vectorstore(chunks):
     """Embed chunks and store in ChromaDB."""
-    print(f"\n  🧠 Loading embedding model: {EMBED_MODEL}")
+    print(f"\n  Loading embedding model: {EMBED_MODEL}")
     print("     (First run downloads ~90MB — subsequent runs use cache)")
     
     embeddings = HuggingFaceEmbeddings(
@@ -86,13 +86,13 @@ def build_vectorstore(chunks):
         encode_kwargs={"normalize_embeddings": True},
     )
     
-    print(f"  💾 Building ChromaDB at: {CHROMA_DIR}/")
+    print(f"  Building ChromaDB at: {CHROMA_DIR}/")
     
     # Wipe existing collection if reingest
     if CHROMA_DIR.exists():
         import shutil
         shutil.rmtree(CHROMA_DIR)
-        print("  🔄 Cleared existing ChromaDB (fresh ingest)")
+        print("  Cleared existing ChromaDB (fresh ingest)")
     
     vectorstore = Chroma.from_documents(
         documents=chunks,
@@ -182,7 +182,7 @@ def add_synthetic_fallback(vectorstore):
     
     vectorstore.add_documents(synthetic_docs)
     vectorstore.persist()
-    print(f"  📌 Added {len(synthetic_docs)} synthetic fallback entries")
+    print(f"  Added {len(synthetic_docs)} synthetic fallback entries")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
@@ -196,17 +196,17 @@ def main():
     (DATA_DIR / "illinois_extension").mkdir(exist_ok=True)
     (DATA_DIR / "usda_pages").mkdir(exist_ok=True)
     
-    print(f"\n📂 Loading documents from: {DATA_DIR}/")
+    print(f"\nLoading documents from: {DATA_DIR}/")
     docs = load_documents()
     
     if docs:
-        print(f"\n✂️  Chunking {len(docs)} pages...")
+        print(f"\nChunking {len(docs)} pages...")
         chunks = chunk_documents(docs)
-        print(f"\n🧠 Building vector store...")
+        print(f"\nBuilding vector store...")
         vectorstore = build_vectorstore(chunks)
         add_synthetic_fallback(vectorstore)
     else:
-        print("\n⚠️  No real docs found — building with synthetic fallback data only.")
+        print("\nNo real docs found — building with synthetic fallback data only.")
         print("    This is enough to demo! Add real PDFs later for better accuracy.\n")
         # Build empty vectorstore then add fallback
         from langchain_huggingface import HuggingFaceEmbeddings
@@ -225,7 +225,7 @@ def main():
     
     # Verify
     count = vectorstore._collection.count()
-    print(f"\n✅ Done! ChromaDB contains {count} vectors at: {CHROMA_DIR}/")
+    print(f"\nDone! ChromaDB contains {count} vectors at: {CHROMA_DIR}/")
     print("\nNext step: run the app with:")
     print("  streamlit run app.py")
 
