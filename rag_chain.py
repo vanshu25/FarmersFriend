@@ -7,6 +7,7 @@
 
 import os
 import json
+import streamlit as st
 import base64
 from pathlib import Path
 from typing import Optional
@@ -15,6 +16,14 @@ import anthropic
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Chroma
 
+@st.cache_resource
+def load_embeddings():
+    from langchain_huggingface import HuggingFaceEmbeddings
+    return HuggingFaceEmbeddings(
+        model_name=EMBED_MODEL,
+        model_kwargs={"device": "cpu"},
+        encode_kwargs={"normalize_embeddings": True},
+    )
 # ── Config ────────────────────────────────────────────────────────────────────
 
 CHROMA_DIR = Path("chroma_db")
@@ -80,28 +89,21 @@ Severity scale: LOW (monitor at home), MEDIUM (act today), HIGH (call vet today)
 
 _vectorstore = None  # module-level cache so we don't reload on every call
 
+@st.cache_resource
 def get_vectorstore():
-    global _vectorstore
-    if _vectorstore is not None:
-        return _vectorstore
-    
-    if not CHROMA_DIR.exists():
-        raise FileNotFoundError(
-            "ChromaDB not found. Run: python ingest.py"
-        )
+    from langchain_huggingface import HuggingFaceEmbeddings
+    from langchain_chroma import Chroma
     
     embeddings = HuggingFaceEmbeddings(
         model_name=EMBED_MODEL,
         model_kwargs={"device": "cpu"},
         encode_kwargs={"normalize_embeddings": True},
     )
-    
-    _vectorstore = Chroma(
+    return Chroma(
         collection_name=COLLECTION_NAME,
         embedding_function=embeddings,
         persist_directory=str(CHROMA_DIR),
     )
-    return _vectorstore
 
 
 # ── Retrieval ─────────────────────────────────────────────────────────────────
