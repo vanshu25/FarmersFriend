@@ -1,0 +1,13 @@
+# Never commit these
+.env
+venv/
+chroma_db/
+__pycache__/
+*.pyc
+.DS_Store
+
+# Data folder (too large for git)
+data/
+
+# Eval results
+eval/eval_results.json
