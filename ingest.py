@@ -101,7 +101,7 @@ def build_vectorstore(chunks):
         persist_directory=str(CHROMA_DIR),
     )
     
-    vectorstore.persist()
+    # vectorstore.persist()
     return vectorstore
 
 
@@ -181,7 +181,7 @@ def add_synthetic_fallback(vectorstore):
     ]
     
     vectorstore.add_documents(synthetic_docs)
-    vectorstore.persist()
+    # vectorstore.persist()
     print(f"  Added {len(synthetic_docs)} synthetic fallback entries")
 
 

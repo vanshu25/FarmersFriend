@@ -208,7 +208,7 @@ st.markdown("""
   }
   .welcome-text{font-family:'Nunito',sans-serif;font-size:15px;font-weight:700;
     color:#5a8a3c;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:4px;}
-  .farm-name{font-family:'Fredoka One',cursive;font-size:48px;color:#2d4a1e;
+  .farm-name{font-family:'Fredoka One',cursive;font-size:100px;color:#2d4a1e;
     line-height:1.1;margin:0 0 4px;text-shadow:2px 2px 0 rgba(90,138,60,0.15);}
   .stat-farm-label{font-family:'Nunito',sans-serif;font-size:20px;color:#7a9a6a;
     font-weight:800;margin-bottom:6px;letter-spacing:0.05em;}
@@ -458,8 +458,8 @@ def screen_home():
     st.markdown("""
     <div class="hero-card">
       <div class="welcome-text">Welcome to</div>
-      <div class="farm-name">Farmer's Friend</div>
-      <div class="stat-farm-label">StatFarm</div>
+      <div class="farm-name" style="font-size: 50px;">Farmer's Friend</div>
+      <div class="stat-farm-label" style="font-size: 20px;">StatFarm</div>
       <div class="tagline">How can we help you today?</div>
       <div class="subtagline">Select an animal below to begin your livestock health check.</div>
     </div>
@@ -589,7 +589,7 @@ def screen_dialogue():
 
     st.progress(progress)
 
-    col_back, _ = st.columns([0.15, 0.85])
+    col_back, _ = st.columns([0.15, 0.5])
     with col_back:
         if st.button("← Back", key="back_btn"):
             if q_idx > 0:
