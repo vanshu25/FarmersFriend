@@ -97,6 +97,13 @@
       "species": "Cow",
       "notes": "",
       "registered_at": "2026-03-08T10:47:51.454756"
+    },
+    "CO11": {
+      "id": "CO11",
+      "name": "CO11",
+      "species": "Cow",
+      "notes": "",
+      "registered_at": "2026-03-08T11:28:47.910658"
     }
   },
   "records": [
@@ -1206,6 +1213,217 @@
       "vet_alerted": false,
       "image_observations": "No image provided",
       "uncertainty_note": "Cannot definitively diagnose without physical hoof examination. The slight abdominal swelling mentioned is unclear and may be unrelated to the lameness issue."
+    },
+    {
+      "record_id": "REC-20260308113132-CO1",
+      "animal_id": "CO1",
+      "species": "Cow",
+      "timestamp": "2026-03-08T11:31:32.069729",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Mastitis",
+          "confidence": "HIGH",
+          "explanation": "Recent calving cow with swollen, hot, painful udder matches classic mastitis signs described in agricultural extension knowledge"
+        },
+        {
+          "name": "Normal post-calving udder engorgement",
+          "confidence": "MEDIUM",
+          "explanation": "Some udder swelling can be normal after recent calving, but heat and pain suggest infection"
+        },
+        {
+          "name": "Ketosis",
+          "confidence": "LOW",
+          "explanation": "Was pre-scored as possible but no digestive symptoms or mobility issues present to support this"
+        }
+      ],
+      "answers": {
+        "animal_id": "CO1",
+        "cow_count": "Just one cow",
+        "duration": "1-2 days",
+        "mobility": "Yes, standing and walking normally",
+        "calving": "Yes, calved within last few weeks",
+        "abdomen": "Slightly swollen, not sure",
+        "respiratory": [
+          "None of these"
+        ],
+        "udder_milk": [
+          "Udder feels swollen, hot or painful"
+        ],
+        "digestive_eyes": [
+          "None of these"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "Image shows the underside/udder area of a brown and white cow with visible teats. The udder appears to have some swelling consistent with the farmer's report, though normal variation in udder size post-calving makes visual assessment challenging.",
+      "uncertainty_note": "Cannot confirm mastitis without milk testing or examination. Heat and pain in udder strongly suggest infection but visual milk changes not yet reported."
+    },
+    {
+      "record_id": "REC-20260308113246-CO1",
+      "animal_id": "CO1",
+      "species": "Cow",
+      "timestamp": "2026-03-08T11:32:46.617827",
+      "severity": "HIGH",
+      "conditions": [
+        {
+          "name": "Johne's Disease (Paratuberculosis)",
+          "confidence": "MEDIUM",
+          "explanation": "Chronic wasting disease that causes significant weight loss in adult cattle, often becomes apparent after stress events like calving"
+        },
+        {
+          "name": "Post-calving metabolic disorder",
+          "confidence": "MEDIUM",
+          "explanation": "Recent calving can trigger various metabolic issues that may cause rapid weight loss if energy demands exceed intake"
+        },
+        {
+          "name": "Internal parasites or other chronic disease",
+          "confidence": "LOW",
+          "explanation": "Significant weight loss in absence of other obvious symptoms could indicate parasitic load or other systemic illness"
+        }
+      ],
+      "answers": {
+        "animal_id": "CO1",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Yes, standing and walking normally",
+        "calving": "Yes, calved within last 3 days",
+        "abdomen": "No swelling",
+        "respiratory": [
+          "None"
+        ],
+        "udder_milk": [
+          "None"
+        ],
+        "digestive_eyes": [
+          "Significant weight loss"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "The retrieved knowledge focused on mastitis, which doesn't match the reported symptoms. Without specific information about weight loss conditions in cattle, confidence is limited. The pre-scored likelihood mentions BVD/Johne's Disease, but detailed information about these conditions was not provided in the retrieved documents."
+    },
+    {
+      "record_id": "REC-20260308113639-CO4",
+      "animal_id": "CO4",
+      "species": "Cow",
+      "timestamp": "2026-03-08T11:36:39.504750",
+      "severity": "HIGH",
+      "conditions": [
+        {
+          "name": "Mastitis",
+          "confidence": "HIGH",
+          "explanation": "Udder swelling, heat, and pain in recently calved cow matches classic mastitis signs described in veterinary sources"
+        },
+        {
+          "name": "Normal post-calving udder engorgement",
+          "confidence": "MEDIUM",
+          "explanation": "Recent calving can cause temporary udder swelling, but heat and pain suggest infection rather than normal engorgement"
+        },
+        {
+          "name": "Udder edema",
+          "confidence": "LOW",
+          "explanation": "Can occur around calving but typically less painful and hot than what's described"
+        }
+      ],
+      "answers": {
+        "animal_id": "CO4",
+        "cow_count": "Just one cow",
+        "duration": "1-2 days",
+        "mobility": "Yes, standing and walking normally",
+        "calving": "Yes, calved within last few weeks",
+        "abdomen": "No swelling",
+        "respiratory": [
+          "None of these"
+        ],
+        "udder_milk": [
+          "Udder feels swollen, hot or painful"
+        ],
+        "digestive_eyes": [
+          "None"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "Image shows a healthy-looking cow udder with normal pink coloration and no visible swelling, discharge, or abnormalities. This appears to contradict the reported symptoms of swelling, heat, and pain.",
+      "uncertainty_note": "Cannot confirm bacterial infection without milk testing or culture. Severity could range from mild to severe mastitis depending on causative organism."
+    },
+    {
+      "record_id": "REC-20260308113844-CH1",
+      "animal_id": "CH1",
+      "species": "Chicken",
+      "timestamp": "2026-03-08T11:38:44.303922",
+      "severity": "LOW",
+      "conditions": [
+        {
+          "name": "Early stage illness or stress",
+          "confidence": "LOW",
+          "explanation": "No specific symptoms reported makes it difficult to identify any particular condition"
+        },
+        {
+          "name": "Normal variation or minor issue",
+          "confidence": "MEDIUM",
+          "explanation": "Single bird just noticed today with no clear symptoms could be temporary stress or normal behavior"
+        },
+        {
+          "name": "Developing coccidiosis",
+          "confidence": "LOW",
+          "explanation": "While coccidiosis is common in chickens, no digestive symptoms are present yet"
+        }
+      ],
+      "answers": {
+        "chicken_count": "Just one chicken",
+        "animal_id": "CH1",
+        "single_duration": "Just noticed (today)",
+        "single_respiratory": "No",
+        "single_digestive": "No",
+        "single_neurological": "No"
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Very limited information provided - no specific symptoms, behaviors, or physical observations described. Need more details about what exactly was 'noticed' about this bird to provide better guidance."
+    },
+    {
+      "record_id": "REC-20260308114501-CH1",
+      "animal_id": "CH1",
+      "species": "Chicken",
+      "timestamp": "2026-03-08T11:45:01.552405",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Coccidiosis",
+          "confidence": "LOW",
+          "explanation": "Retrieved knowledge mentions this as common in chickens with digestive issues, but bird in image appears healthy"
+        },
+        {
+          "name": "Early stage illness",
+          "confidence": "LOW",
+          "explanation": "Multiple body systems affected but no visible symptoms in photo"
+        },
+        {
+          "name": "Stress or environmental factors",
+          "confidence": "MEDIUM",
+          "explanation": "Could cause multiple mild symptoms without visible signs"
+        }
+      ],
+      "answers": {
+        "chicken_count": "Just one chicken",
+        "animal_id": "CH1",
+        "single_duration": "Just noticed (today)",
+        "single_respiratory": "Yes",
+        "single_resp_detail": [
+          "None"
+        ],
+        "single_digestive": "Yes",
+        "single_digest_detail": [
+          "None"
+        ],
+        "single_neurological": "Yes",
+        "single_neuro_detail": [
+          "None"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "White chicken appears alert and healthy with bright orange eye, normal pink/red comb coloration, clean beak, and good feather condition. No visible signs of distress, discharge, or abnormal posture.",
+      "uncertainty_note": "Very limited information provided - no specific symptoms described for any of the reported body systems. The bird appears healthy in the photo, creating uncertainty about the actual severity or presence of illness."
     }
   ]
 }
