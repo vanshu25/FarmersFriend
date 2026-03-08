@@ -1217,7 +1217,7 @@ def screen_result():
         col_img, col_obs = st.columns([1, 2])
         with col_img:
             img = Image.open(io.BytesIO(st.session_state.uploaded_image))
-            st.image(img, use_column_width=True)
+            st.image(img, use_container_width=True)
         with col_obs:
             st.markdown(f"""
             <div style="background:#f8f6f0; border-radius:10px; padding:14px; font-size:13px; color:#2d4a1e;">
@@ -1360,8 +1360,7 @@ def screen_result():
               🚨 Alert Your Vet (Opens Email)
             </a>
             """, unsafe_allow_html=True)
-            with st.expander("👁️ Preview vet message"):
-                st.text_area("Message preview:", value=r.get("vet_summary", ""), height=150, disabled=True)
+
 
         # Farm Incident Report — unchanged, but now includes animal ID in ANIMAL row
         st.markdown("<br>", unsafe_allow_html=True)
