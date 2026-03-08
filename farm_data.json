@@ -62,6 +62,41 @@
       "species": "Chicken",
       "notes": "",
       "registered_at": "2026-03-07T23:17:11.214235"
+    },
+    "CH8": {
+      "id": "CH8",
+      "name": "CH8",
+      "species": "Chicken",
+      "notes": "",
+      "registered_at": "2026-03-08T10:16:24.640569"
+    },
+    "CH6": {
+      "id": "CH6",
+      "name": "CH6",
+      "species": "Chicken",
+      "notes": "",
+      "registered_at": "2026-03-08T10:25:26.933165"
+    },
+    "CO6": {
+      "id": "CO6",
+      "name": "CO6",
+      "species": "Cow",
+      "notes": "",
+      "registered_at": "2026-03-08T10:26:14.422750"
+    },
+    "CO8": {
+      "id": "CO8",
+      "name": "CO8",
+      "species": "Cow",
+      "notes": "",
+      "registered_at": "2026-03-08T10:26:25.262118"
+    },
+    "CO10": {
+      "id": "CO10",
+      "name": "CO10",
+      "species": "Cow",
+      "notes": "",
+      "registered_at": "2026-03-08T10:47:51.454756"
     }
   },
   "records": [
@@ -444,6 +479,645 @@
       "vet_alerted": false,
       "image_observations": "White chicken with healthy-looking bright red comb and wattles. Eye appears clear and alert. No visible signs of distress, discharge, or illness in this close-up head shot. Comb color contradicts pale comb typically seen in coccidiosis.",
       "uncertainty_note": "Limited symptom information provided - only respiratory issues mentioned without specific details. Visual examination shows healthy-appearing comb which doesn't match typical coccidiosis presentation. Need more specific respiratory symptom details and observation time."
+    },
+    {
+      "record_id": "REC-20260308073031-CH3",
+      "animal_id": "CH3",
+      "species": "Chicken",
+      "timestamp": "2026-03-08T07:30:31.379170",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Respiratory infection (viral or bacterial)",
+          "confidence": "MEDIUM",
+          "explanation": "Farmer reports respiratory issues in single bird, but no specific symptoms detailed"
+        },
+        {
+          "name": "Environmental stress or irritation",
+          "confidence": "MEDIUM",
+          "explanation": "Single bird affected suggests individual rather than infectious cause"
+        },
+        {
+          "name": "Early stage infectious disease",
+          "confidence": "LOW",
+          "explanation": "Could be early stage of various poultry diseases before other symptoms appear"
+        }
+      ],
+      "answers": {
+        "chicken_count": "Just one chicken",
+        "animal_id": "CH3",
+        "single_duration": "Just noticed (today)",
+        "single_respiratory": "Yes",
+        "single_resp_detail": [
+          "None of these"
+        ],
+        "single_digestive": "No",
+        "single_neurological": "No"
+      },
+      "vet_alerted": false,
+      "image_observations": "Photo shows a white chicken with bright, clear orange eye and normal-appearing red comb and wattles. Bird appears alert and the visible features look healthy, which somewhat contrasts with the reported respiratory issues.",
+      "uncertainty_note": "Very limited information provided about specific respiratory symptoms. The retrieved knowledge only covers coccidiosis (digestive disease), which doesn't match the reported respiratory issues. Need more details about breathing patterns, sounds, discharge, or other specific respiratory signs."
+    },
+    {
+      "record_id": "REC-20260308093921-CO4",
+      "animal_id": "CO4",
+      "species": "Cow",
+      "timestamp": "2026-03-08T09:39:21.860616",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Foot Rot (Interdigital Necrobacillosis)",
+          "confidence": "HIGH",
+          "explanation": "Swelling between toes, hoof damage, limping, and fever are classic signs of foot rot"
+        },
+        {
+          "name": "Sole Abscess or Hoof Injury",
+          "confidence": "MEDIUM",
+          "explanation": "Cracked/damaged hoof with limping could indicate deep hoof injury or abscess"
+        },
+        {
+          "name": "Bovine Respiratory Disease (BRD)",
+          "confidence": "LOW",
+          "explanation": "Fever is present but missing typical respiratory signs like nasal discharge or labored breathing"
+        }
+      ],
+      "answers": {
+        "animal_id": "CO4",
+        "cow_count": "Just one cow",
+        "duration": "3-7 days",
+        "mobility": "Standing but limping or reluctant to walk",
+        "hoof_signs": [
+          "Swelling between the toes",
+          "Hoof looks cracked or damaged"
+        ],
+        "calving": "Not sure",
+        "abdomen": "Slightly swollen, not sure",
+        "respiratory": [
+          "Fever (hot nose, warm ears)"
+        ],
+        "udder_milk": [
+          "None"
+        ],
+        "digestive_eyes": [
+          "None"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Limited information available on foot rot treatment. The retrieved knowledge focuses primarily on respiratory disease rather than hoof conditions. Unable to definitively rule out other hoof infections without physical examination."
+    },
+    {
+      "record_id": "REC-20260308094209-CO1",
+      "animal_id": "CO1",
+      "species": "Cow",
+      "timestamp": "2026-03-08T09:42:09.514275",
+      "severity": "HIGH",
+      "conditions": [
+        {
+          "name": "Bloat (Left Displaced Abomasum)",
+          "confidence": "HIGH",
+          "explanation": "Left-side abdominal swelling in a recently calved cow is classic for LDA, especially when cow is still mobile and eating"
+        },
+        {
+          "name": "Ruminal Bloat",
+          "confidence": "MEDIUM",
+          "explanation": "Can cause left-side swelling, but typically cow would show more distress and difficulty moving"
+        },
+        {
+          "name": "Post-calving complications",
+          "confidence": "LOW",
+          "explanation": "Recent calving can cause various internal changes, but specific left-side swelling suggests displaced abomasum"
+        }
+      ],
+      "answers": {
+        "animal_id": "CO1",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Yes, standing and walking normally",
+        "calving": "Yes, calved within last 3 days",
+        "abdomen": "Yes, visibly swollen on the left",
+        "respiratory": [
+          "None"
+        ],
+        "udder_milk": [
+          "None"
+        ],
+        "digestive_eyes": [
+          "None"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "The retrieved knowledge focused on mastitis rather than bloat conditions, limiting specific guidance. Need veterinary examination to differentiate between LDA and other causes of left-side swelling in fresh cows."
+    },
+    {
+      "record_id": "REC-20260308094345-CH1",
+      "animal_id": "CH1",
+      "species": "Chicken",
+      "timestamp": "2026-03-08T09:43:45.726218",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Early health concern requiring evaluation",
+          "confidence": "LOW",
+          "explanation": "Insufficient symptom information provided - farmer unsure about neurological signs and no other clear symptoms reported"
+        },
+        {
+          "name": "Marek's Disease",
+          "confidence": "LOW",
+          "explanation": "Pre-scored as possible but no neurological signs clearly observed to support this viral disease"
+        },
+        {
+          "name": "General stress or minor illness",
+          "confidence": "LOW",
+          "explanation": "Single bird affected with no clear symptoms could indicate mild stress or early illness"
+        }
+      ],
+      "answers": {
+        "chicken_count": "Just one chicken",
+        "animal_id": "CH1",
+        "single_duration": "Just noticed (today)",
+        "single_respiratory": "No",
+        "single_digestive": "No",
+        "single_neurological": "Not sure",
+        "single_neuro_detail": [
+          "None of these"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Very limited symptom information provided. Farmer is unsure about neurological signs which are key diagnostic indicators. Without clear symptoms, it's impossible to provide confident condition assessment."
+    },
+    {
+      "record_id": "REC-20260308094455-CH1",
+      "animal_id": "CH1",
+      "species": "Chicken",
+      "timestamp": "2026-03-08T09:44:55.655073",
+      "severity": "LOW",
+      "conditions": [
+        {
+          "name": "Early stage illness - needs observation",
+          "confidence": "LOW",
+          "explanation": "No specific symptoms reported yet, but farmer noticed something concerning"
+        },
+        {
+          "name": "Stress or environmental change",
+          "confidence": "LOW",
+          "explanation": "Single bird affected with no clear symptoms could indicate stress response"
+        },
+        {
+          "name": "Beginning of infectious disease",
+          "confidence": "LOW",
+          "explanation": "Early stages before obvious symptoms develop"
+        }
+      ],
+      "answers": {
+        "chicken_count": "Just one chicken",
+        "animal_id": "CH1",
+        "single_duration": "Just noticed (today)",
+        "single_respiratory": "No",
+        "single_digestive": "No",
+        "single_neurological": "No"
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Very limited information provided - no specific symptoms described, making it impossible to narrow down potential conditions. Need more detailed observation of the bird's behavior, appetite, droppings, and physical appearance."
+    },
+    {
+      "record_id": "REC-20260308101648-CH8",
+      "animal_id": "CH8",
+      "species": "Chicken",
+      "timestamp": "2026-03-08T10:16:48.644621",
+      "severity": "LOW",
+      "conditions": [
+        {
+          "name": "Early stage illness - insufficient information",
+          "confidence": "LOW",
+          "explanation": "Only symptom reported is 'just noticed today' with no specific signs described"
+        },
+        {
+          "name": "Coccidiosis",
+          "confidence": "LOW",
+          "explanation": "Common in chickens but no digestive symptoms observed yet to confirm"
+        },
+        {
+          "name": "General stress or environmental factors",
+          "confidence": "LOW",
+          "explanation": "Single bird affected with vague onset could indicate environmental stressor"
+        }
+      ],
+      "answers": {
+        "chicken_count": "Just one chicken",
+        "animal_id": "CH8",
+        "single_duration": "Just noticed (today)",
+        "single_respiratory": "No",
+        "single_digestive": "Not sure",
+        "single_digest_detail": [
+          "None"
+        ],
+        "single_neurological": "No"
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Very limited symptom information provided - only that something was 'just noticed today' with no specific behavioral or physical signs described. Need more detailed observation to make meaningful assessment."
+    },
+    {
+      "record_id": "REC-20260308101725-CH1",
+      "animal_id": "CH1",
+      "species": "Chicken",
+      "timestamp": "2026-03-08T10:17:25.612444",
+      "severity": "LOW",
+      "conditions": [
+        {
+          "name": "Coccidiosis",
+          "confidence": "LOW",
+          "explanation": "Common in young chickens but no specific digestive symptoms reported yet"
+        },
+        {
+          "name": "General illness/stress",
+          "confidence": "LOW",
+          "explanation": "Single bird affected with no clear symptoms described"
+        },
+        {
+          "name": "Marek's Disease",
+          "confidence": "LOW",
+          "explanation": "Possible but no neurological signs observed"
+        }
+      ],
+      "answers": {
+        "chicken_count": "Just one chicken",
+        "animal_id": "CH1",
+        "single_duration": "Just noticed (today)",
+        "single_respiratory": "No",
+        "single_digestive": "Not sure",
+        "single_digest_detail": [
+          "None of these"
+        ],
+        "single_neurological": "Not sure",
+        "single_neuro_detail": [
+          "None"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Very limited information provided - farmer is unsure about digestive and neurological symptoms. Without clear signs or symptoms, it's difficult to make confident assessments. Need more specific observations."
+    },
+    {
+      "record_id": "REC-20260308101817-CO1",
+      "animal_id": "CO1",
+      "species": "Cow",
+      "timestamp": "2026-03-08T10:18:17.633331",
+      "severity": "LOW",
+      "conditions": [
+        {
+          "name": "Early bloat or digestive upset",
+          "confidence": "LOW",
+          "explanation": "Slight abdominal swelling mentioned, but no other classic bloat signs like distress or left-side distension"
+        },
+        {
+          "name": "Normal variation or full rumen",
+          "confidence": "MEDIUM",
+          "explanation": "Single cow with mild swelling and normal behavior could be normal digestive fullness"
+        },
+        {
+          "name": "Early pregnancy or other abdominal condition",
+          "confidence": "LOW",
+          "explanation": "Abdominal changes can have various causes, but limited symptoms make assessment difficult"
+        }
+      ],
+      "answers": {
+        "animal_id": "CO1",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Yes, standing and walking normally",
+        "calving": "No recent calving",
+        "abdomen": "Slightly swollen, not sure",
+        "respiratory": [
+          "None of these"
+        ],
+        "udder_milk": [
+          "None of these"
+        ],
+        "digestive_eyes": [
+          "None of these"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Very limited symptoms reported. The 'slight abdominal swelling' description is vague and the farmer is 'not sure' about it. No clear clinical signs to support any specific diagnosis. The retrieved knowledge only covered mastitis, which doesn't match the reported symptoms."
+    },
+    {
+      "record_id": "REC-20260308101911-CO1",
+      "animal_id": "CO1",
+      "species": "Cow",
+      "timestamp": "2026-03-08T10:19:11.821564",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Foot Rot",
+          "confidence": "HIGH",
+          "explanation": "Limping and reluctance to walk are classic signs of foot rot in cattle, which is the most common cause of lameness"
+        },
+        {
+          "name": "Sole Ulcer",
+          "confidence": "MEDIUM",
+          "explanation": "Can cause similar limping symptoms and reluctance to bear weight on affected foot"
+        },
+        {
+          "name": "White Line Disease",
+          "confidence": "MEDIUM",
+          "explanation": "Another common foot condition causing lameness and limping in cattle"
+        }
+      ],
+      "answers": {
+        "animal_id": "CO1",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Standing but limping or reluctant to walk",
+        "hoof_signs": [
+          "Nothing obvious"
+        ],
+        "calving": "No recent calving",
+        "abdomen": "Slightly swollen, not sure",
+        "respiratory": [
+          "None of these"
+        ],
+        "udder_milk": [
+          "None of these"
+        ],
+        "digestive_eyes": [
+          "None of these"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Cannot definitively diagnose without physical hoof examination. Need to check for swelling between toes, foul odor, and hoof integrity. Slight abdominal swelling mention adds uncertainty about potential secondary conditions."
+    },
+    {
+      "record_id": "REC-20260308102559-CH6",
+      "animal_id": "CH6",
+      "species": "Chicken",
+      "timestamp": "2026-03-08T10:25:59.999823",
+      "severity": "LOW",
+      "conditions": [
+        {
+          "name": "Insufficient information for diagnosis",
+          "confidence": "LOW",
+          "explanation": "No specific symptoms described - farmer only noticed something today but didn't specify what they observed"
+        }
+      ],
+      "answers": {
+        "chicken_count": "Just one chicken",
+        "animal_id": "CH6",
+        "single_duration": "Just noticed (today)",
+        "single_respiratory": "Not sure",
+        "single_resp_detail": [
+          "None of these"
+        ],
+        "single_digestive": "Not sure",
+        "single_digest_detail": [
+          "None"
+        ],
+        "single_neurological": "Not sure",
+        "single_neuro_detail": [
+          "None"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Confidence is very low because no specific symptoms were reported. The farmer only mentioned noticing something today but didn't describe what they observed. Need more detailed observation of the bird's behavior, appetite, droppings, and physical appearance."
+    },
+    {
+      "record_id": "REC-20260308102702-CO8",
+      "animal_id": "CO8",
+      "species": "Cow",
+      "timestamp": "2026-03-08T10:27:02.543828",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Foot Rot",
+          "confidence": "HIGH",
+          "explanation": "Cow is limping and reluctant to walk, which are classic signs of foot rot. Pre-scoring also indicates this as most likely."
+        },
+        {
+          "name": "Sole Ulcer",
+          "confidence": "MEDIUM",
+          "explanation": "Can cause similar limping and reluctance to bear weight, common in cattle."
+        },
+        {
+          "name": "White Line Disease",
+          "confidence": "MEDIUM",
+          "explanation": "Another common cause of lameness with similar symptoms of limping and weight-bearing reluctance."
+        }
+      ],
+      "answers": {
+        "animal_id": "CO8",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Standing but limping or reluctant to walk",
+        "hoof_signs": [
+          "Nothing obvious"
+        ],
+        "calving": "No recent calving",
+        "abdomen": "Slightly swollen, not sure",
+        "respiratory": [
+          "None of these"
+        ],
+        "udder_milk": [
+          "None of these"
+        ],
+        "digestive_eyes": [
+          "None of these"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Farmer reports 'nothing obvious' with hoofs but hasn't done detailed examination. Slight abdominal swelling mentioned but farmer unsure - this could be unrelated or indicate another issue."
+    },
+    {
+      "record_id": "REC-20260308103229-CO1",
+      "animal_id": "CO1",
+      "species": "Cow",
+      "timestamp": "2026-03-08T10:32:29.448603",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Foot Rot",
+          "confidence": "HIGH",
+          "explanation": "Cow is limping and reluctant to walk, which are classic signs of foot rot. Pre-scoring also indicates this as most likely condition."
+        },
+        {
+          "name": "Sole Ulcer",
+          "confidence": "MEDIUM",
+          "explanation": "Can cause similar limping and reluctance to bear weight, though no obvious hoof damage was noted."
+        },
+        {
+          "name": "White Line Disease",
+          "confidence": "MEDIUM",
+          "explanation": "Another common cause of lameness with similar presentation of limping and weight-bearing reluctance."
+        }
+      ],
+      "answers": {
+        "animal_id": "CO1",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Standing but limping or reluctant to walk",
+        "hoof_signs": [
+          "Nothing obvious"
+        ],
+        "calving": "No recent calving",
+        "abdomen": "Slightly swollen, not sure",
+        "respiratory": [
+          "None of these"
+        ],
+        "udder_milk": [
+          "None of these"
+        ],
+        "digestive_eyes": [
+          "None of these"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Cannot definitively diagnose without proper hoof examination. Farmer reports 'nothing obvious' on hoof inspection, but foot problems may not always be immediately visible. Slight abdominal swelling mentioned but uncertain - needs clarification."
+    },
+    {
+      "record_id": "REC-20260308103801-CO1",
+      "animal_id": "CO1",
+      "species": "Cow",
+      "timestamp": "2026-03-08T10:38:01.048296",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Foot Rot",
+          "confidence": "HIGH",
+          "explanation": "Cow is limping and reluctant to walk, which are classic signs of foot rot. Pre-scoring also indicates this as most likely condition."
+        },
+        {
+          "name": "Sole Ulcer",
+          "confidence": "MEDIUM",
+          "explanation": "Another common cause of lameness with similar symptoms - limping and reluctance to bear weight on affected foot."
+        },
+        {
+          "name": "White Line Disease",
+          "confidence": "MEDIUM",
+          "explanation": "Third most common cause of lameness in cattle, can present with similar limping and weight-bearing reluctance."
+        }
+      ],
+      "answers": {
+        "animal_id": "CO1",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Standing but limping or reluctant to walk",
+        "hoof_signs": [
+          "Nothing obvious"
+        ],
+        "calving": "No recent calving",
+        "abdomen": "Slightly swollen, not sure",
+        "respiratory": [
+          "None of these"
+        ],
+        "udder_milk": [
+          "None of these"
+        ],
+        "digestive_eyes": [
+          "None of these"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Farmer reports 'nothing obvious' on hoof examination, but detailed professional hoof inspection may reveal issues not visible to untrained eye. Slight abdominal swelling could be unrelated or indicate additional condition."
+    },
+    {
+      "record_id": "REC-20260308103937-CH1",
+      "animal_id": "CH1",
+      "species": "Chicken",
+      "timestamp": "2026-03-08T10:39:37.018796",
+      "severity": "HIGH",
+      "conditions": [
+        {
+          "name": "Fowl Pox",
+          "confidence": "HIGH",
+          "explanation": "Dark wart-like lesions on comb/wattles are classic fowl pox signs, combined with respiratory issues"
+        },
+        {
+          "name": "Salmonellosis",
+          "confidence": "MEDIUM",
+          "explanation": "White/green diarrhea with dehydration fits salmonella pattern, plus egg production drop"
+        },
+        {
+          "name": "Infectious Bronchitis",
+          "confidence": "MEDIUM",
+          "explanation": "Respiratory symptoms and poor egg shell quality are typical signs"
+        }
+      ],
+      "answers": {
+        "chicken_count": "Just one chicken",
+        "animal_id": "CH1",
+        "single_duration": "Just noticed (today)",
+        "single_respiratory": "Yes",
+        "single_resp_detail": [
+          "Egg production has dropped or shell quality is poor"
+        ],
+        "single_digestive": "Yes",
+        "single_digest_detail": [
+          "White or green diarrhea with signs of dehydration"
+        ],
+        "single_neurological": "Yes",
+        "single_neuro_detail": [
+          "Dark wart-like lesions on comb or wattles"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "The combination of respiratory, digestive, and skin lesions suggests multiple body systems affected, which could indicate a serious systemic infection. The retrieved knowledge focused on coccidiosis but doesn't fully match the described symptoms, limiting diagnostic confidence."
+    },
+    {
+      "record_id": "REC-20260308104839-CO10",
+      "animal_id": "CO10",
+      "species": "Cow",
+      "timestamp": "2026-03-08T10:48:39.207608",
+      "severity": "HIGH",
+      "conditions": [
+        {
+          "name": "Foot Rot",
+          "confidence": "HIGH",
+          "explanation": "Swelling between toes and limping are classic signs of foot rot, especially in wet conditions"
+        },
+        {
+          "name": "Post-Calving Complications with Secondary Foot Issues",
+          "confidence": "MEDIUM",
+          "explanation": "Recent calving combined with abdominal swelling and reluctance to move could indicate retained placenta or metritis affecting mobility"
+        },
+        {
+          "name": "Bloat",
+          "confidence": "MEDIUM",
+          "explanation": "Left-sided abdominal swelling could indicate bloat, though other symptoms don't fully match typical bloat presentation"
+        }
+      ],
+      "answers": {
+        "animal_id": "CO10",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Standing but limping or reluctant to walk",
+        "hoof_signs": [
+          "Swelling between the toes"
+        ],
+        "calving": "Yes, calved within last 3 days",
+        "abdomen": "Yes, visibly swollen on the left",
+        "respiratory": [
+          "Nasal discharge (runny nose)"
+        ],
+        "udder_milk": [
+          "None of these"
+        ],
+        "digestive_eyes": [
+          "None"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "The retrieved knowledge only covers mastitis, but the symptoms suggest foot rot and possibly post-calving complications. Multiple body systems affected in a fresh cow requires veterinary expertise to properly diagnose and treat."
     }
   ]
 }
