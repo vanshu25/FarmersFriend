@@ -99,6 +99,41 @@ st.markdown("""
     color: #1a1a1a !important;
   }
 
+  /* ── SHARED COMPONENTS ── */
+  .question-box {
+    background: white;
+    border-left: 4px solid #5a8a3c;
+    border-radius: 0 12px 12px 0;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    color: #1a1a1a !important;
+  }
+  .type-card {
+    background: white;
+    border: 2px solid #e0d5c5;
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .source-tag {
+    display: inline-block;
+    background: #eef2f7;
+    color: #4a5568 !important;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin: 2px;
+  }
+  .triage-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid #e0d5c5;
+    margin-top: 16px;
+  }
+
+
   /* ── DROPDOWNS, NUMBER INPUT — white bg ── */
   [data-testid="stSelectbox"] > div > div,
   [data-testid="stMultiSelect"] > div > div,
@@ -172,40 +207,6 @@ st.markdown("""
     background-color: white !important;
     color: #1a1a1a !important;
     border-color: #ccc !important;
-  }
-
-  /* ── SHARED COMPONENTS ── */
-  .question-box {
-    background: white;
-    border-left: 4px solid #5a8a3c;
-    border-radius: 0 12px 12px 0;
-    padding: 16px 20px;
-    margin-bottom: 16px;
-    color: #1a1a1a !important;
-  }
-  .type-card {
-    background: white;
-    border: 2px solid #e0d5c5;
-    border-radius: 16px;
-    padding: 28px 20px;
-    text-align: center;
-    transition: all 0.2s;
-  }
-  .source-tag {
-    display: inline-block;
-    background: #eef2f7;
-    color: #4a5568 !important;
-    padding: 2px 10px;
-    border-radius: 12px;
-    font-size: 12px;
-    margin: 2px;
-  }
-  .triage-card {
-    background: white;
-    border-radius: 16px;
-    padding: 24px;
-    border: 1px solid #e0d5c5;
-    margin-top: 16px;
   }
 
   /* ── HOME: FARM SCENE ── */
@@ -1216,7 +1217,7 @@ def screen_result():
         col_img, col_obs = st.columns([1, 2])
         with col_img:
             img = Image.open(io.BytesIO(st.session_state.uploaded_image))
-            st.image(img, width=300)
+            st.image(img, use_column_width=True)
         with col_obs:
             st.markdown(f"""
             <div style="background:#f8f6f0; border-radius:10px; padding:14px; font-size:13px; color:#2d4a1e;">
@@ -1240,16 +1241,97 @@ def screen_result():
         sources_html = " ".join(f'<span class="source-tag">{s}</span>' for s in sources)
         st.markdown(f'<div>{sources_html}</div>', unsafe_allow_html=True)
 
-    # Vet alert section — unchanged
-    if escalate or severity in ["HIGH", "CRITICAL"]:
+    # ── MEDIUM severity: monitor & watch card ────────────────────────────────
+    if severity == "MEDIUM":
+        st.markdown("""
+        <div style="background:#fffbeb; border:2px solid #f59e0b; border-radius:14px; padding:20px; margin-top:16px;">
+          <div style="font-size:18px; font-weight:800; color:#92400e; margin-bottom:10px;">
+            ⚠️ Monitor &amp; Watch Closely
+          </div>
+          <div style="color:#78350f; font-size:13px; margin-bottom:14px;">
+            Symptoms are moderate — a vet visit is not urgent right now, but close monitoring is important.
+            If symptoms worsen or new signs appear, escalate immediately.
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="background:#fef3c7; border:1px solid #fbbf24; border-radius:10px; padding:12px;">
+              <div style="font-weight:800; font-size:12px; color:#92400e; margin-bottom:6px;">🔒 Isolate Animal</div>
+              <div style="font-size:11px; color:#78350f; line-height:1.5;">
+                Separate from the herd to prevent potential spread and reduce stress.
+                Provide fresh water and easy access to feed.
+              </div>
+            </div>
+            <div style="background:#fef3c7; border:1px solid #fbbf24; border-radius:10px; padding:12px;">
+              <div style="font-weight:800; font-size:12px; color:#92400e; margin-bottom:6px;">📋 Log &amp; Observe</div>
+              <div style="font-size:11px; color:#78350f; line-height:1.5;">
+                Record temperature, eating habits, and any new symptoms twice daily.
+                Note any changes in behaviour, gait, or discharge.
+              </div>
+            </div>
+            <div style="background:#fef3c7; border:1px solid #fbbf24; border-radius:10px; padding:12px;">
+              <div style="font-weight:800; font-size:12px; color:#92400e; margin-bottom:6px;">🔁 Re-check in 1–2 Days</div>
+              <div style="font-size:11px; color:#78350f; line-height:1.5;">
+                Submit a new health report in 24–48 hours. If severity increases to HIGH or
+                symptoms spread to other animals, contact your vet immediately.
+              </div>
+            </div>
+            <div style="background:#fef3c7; border:1px solid #fbbf24; border-radius:10px; padding:12px;">
+              <div style="font-weight:800; font-size:12px; color:#92400e; margin-bottom:6px;">📞 When to Call Vet Now</div>
+              <div style="font-size:11px; color:#78350f; line-height:1.5;">
+                Rapid breathing, collapse, high fever (&gt;104°F / 40°C), refusal to eat for
+                &gt;24 hrs, or symptoms spreading to other animals — call immediately.
+              </div>
+            </div>
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Optional vet email for MEDIUM
+        st.markdown("""
+        <div style="margin-top:14px; padding-top:14px; border-top:1px solid #fbbf24;">
+          <div style="font-size:18px; font-weight:800; color:#92400e; margin-bottom:10px;">
+            📧 Vet Observation <span style="font-weight:400; color:#a16207; font-size:18px;">(optional)</span>
+          </div>
+          <div style="color:#78350f; font-size:13px; margin-bottom:14px;">
+            Not urgent, but you can send your vet a heads-up with the current symptoms so they can advise remotely or schedule a routine visit.
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        if st.session_state.judge_mode:
+            if st.button("📧 Notify Vet (Judge Mode — Simulated)", use_container_width=True, key="medium_vet_judge"):
+                sim = simulate_alert(animal["label"], severity, r.get("vet_summary", ""))
+                st.info(f"📬 {sim['message']}")
+        else:
+            mailto_link_med = build_mailto_link(
+                vet_email=st.session_state.vet_email,
+                animal_type=animal["label"],
+                severity=severity,
+                vet_summary=r.get("vet_summary", ""),
+                conditions=r.get("likely_conditions", []),
+                answers=st.session_state.answers,
+                chicken_type=st.session_state.get("chicken_type"),
+            )
+            st.markdown(f"""
+            <a href="{mailto_link_med}" style="display:block; background:#f59e0b; color:#431407;
+               text-align:center; padding:12px; border-radius:10px; font-weight:700;
+               font-size:14px; text-decoration:none; margin-bottom:4px;">
+              Send Vet Observation Email
+            </a>
+            """, unsafe_allow_html=True)
+
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── HIGH / CRITICAL: vet alert ─────────────────────────────────────────────
+    if severity in ["HIGH", "CRITICAL"]:
         st.markdown("""
         <div style="background:#fff0f0; border:2px solid #dc3545; border-radius:14px; padding:20px; margin-top:16px;">
           <div style="font-size:18px; font-weight:800; color:#842029; margin-bottom:8px;">
-            🚨 Vet Consultation Recommended
+            🚨 Vet Consultation Required
           </div>
           <div style="color:#6b2737; font-size:13px;">
-            Based on the severity of these symptoms, please contact your veterinarian.
-            Click below to send them a pre-filled report.
+            Symptoms indicate a serious condition — contact your veterinarian immediately.
+            Click below to send them a pre-filled report with the full symptom history.
           </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1279,7 +1361,7 @@ def screen_result():
             </a>
             """, unsafe_allow_html=True)
             with st.expander("👁️ Preview vet message"):
-                st.text_area("Edit before sending:", value=r.get("vet_summary", ""), height=150)
+                st.text_area("Message preview:", value=r.get("vet_summary", ""), height=150, disabled=True)
 
         # Farm Incident Report — unchanged, but now includes animal ID in ANIMAL row
         st.markdown("<br>", unsafe_allow_html=True)
