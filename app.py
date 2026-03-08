@@ -133,6 +133,82 @@ st.markdown("""
     margin-top: 16px;
   }
 
+
+  /* ── DROPDOWNS, NUMBER INPUT — white bg ── */
+  [data-testid="stSelectbox"] > div > div,
+  [data-testid="stMultiSelect"] > div > div,
+  div[data-baseweb="select"] > div {
+    background-color: white !important;
+    color: #1a1a1a !important;
+    border-color: #ccc !important;
+  }
+  div[data-baseweb="popover"] ul,
+  div[data-baseweb="menu"] ul,
+  div[data-baseweb="popover"] li,
+  div[data-baseweb="menu"] li {
+    background-color: white !important;
+    color: #1a1a1a !important;
+  }
+  div[data-baseweb="popover"] li:hover,
+  div[data-baseweb="menu"] li:hover {
+    background-color: #f0f7ec !important;
+  }
+  [data-testid="stNumberInput"] input,
+  input[type="number"] {
+    background-color: white !important;
+    color: #1a1a1a !important;
+    border-color: #ccc !important;
+  }
+  [data-testid="stNumberInput"] > div {
+    background-color: white !important;
+  }
+
+  /* ── FILE UPLOADER — white bg, dark text, white Browse button ── */
+  [data-testid="stFileUploader"] > div,
+  [data-testid="stFileUploader"] section,
+  [data-testid="stFileUploaderDropzone"] {
+    background-color: white !important;
+    color: #1a1a1a !important;
+    border-color: #ccc !important;
+    border-radius: 10px !important;
+  }
+  [data-testid="stFileUploaderDropzone"] span,
+  [data-testid="stFileUploaderDropzone"] p,
+  [data-testid="stFileUploader"] span,
+  [data-testid="stFileUploader"] p {
+    color: #1a1a1a !important;
+  }
+  [data-testid="stFileUploaderDropzone"] button,
+  [data-testid="stFileUploader"] button {
+    background-color: white !important;
+    color: #1a1a1a !important;
+    border: 1.5px solid #ccc !important;
+    border-radius: 8px !important;
+  }
+
+  /* ── EXPANDER — keep white bg when open, no black flash ── */
+  [data-testid="stExpander"],
+  [data-testid="stExpander"] > div,
+  [data-testid="stExpanderDetails"],
+  details summary {
+    background-color: white !important;
+    color: #1a1a1a !important;
+    border-color: #e0d5c5 !important;
+  }
+  [data-testid="stExpander"] summary,
+  [data-testid="stExpander"] summary p,
+  [data-testid="stExpander"] summary span {
+    color: #1a1a1a !important;
+    background-color: white !important;
+  }
+
+  /* ── TEXTAREA — white bg, dark text ── */
+  [data-testid="stTextArea"] textarea {
+    background-color: white !important;
+    color: #1a1a1a !important;
+    border-color: #ccc !important;
+  }
+
   /* ── HOME: FARM SCENE ── */
   .stApp {
     background: linear-gradient(180deg, #87CEEB 0%, #b8e4f7 35%, #c8efc0 60%, #8bc34a 100%) !important;

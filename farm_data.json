@@ -1118,6 +1118,94 @@
       "vet_alerted": false,
       "image_observations": "No image provided",
       "uncertainty_note": "The retrieved knowledge only covers mastitis, but the symptoms suggest foot rot and possibly post-calving complications. Multiple body systems affected in a fresh cow requires veterinary expertise to properly diagnose and treat."
+    },
+    {
+      "record_id": "REC-20260308112052-CH2",
+      "animal_id": "CH2",
+      "species": "Chicken",
+      "timestamp": "2026-03-08T11:20:52.268088",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Digestive disorder (possibly coccidiosis)",
+          "confidence": "LOW",
+          "explanation": "Digestive issues reported but no specific symptoms like diarrhea described. Coccidiosis is common in chickens with digestive problems."
+        },
+        {
+          "name": "Neurological condition",
+          "confidence": "LOW",
+          "explanation": "Neurological signs reported but no specific symptoms described, making assessment difficult."
+        },
+        {
+          "name": "General illness or stress",
+          "confidence": "LOW",
+          "explanation": "Combination of digestive and neurological signs could indicate various conditions or environmental stress."
+        }
+      ],
+      "answers": {
+        "chicken_count": "Just one chicken",
+        "animal_id": "CH2",
+        "single_duration": "Just noticed (today)",
+        "single_respiratory": "No",
+        "single_digestive": "Yes",
+        "single_digest_detail": [
+          "None"
+        ],
+        "single_neurological": "Yes",
+        "single_neuro_detail": [
+          "None"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Confidence is very limited because no specific symptoms were described for either the digestive or neurological issues. Without details like type of diarrhea, specific neurological behaviors, or other clinical signs, accurate assessment is not possible."
+    },
+    {
+      "record_id": "REC-20260308112432-CO1",
+      "animal_id": "CO1",
+      "species": "Cow",
+      "timestamp": "2026-03-08T11:24:32.633148",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Foot Rot",
+          "confidence": "HIGH",
+          "explanation": "Limping and reluctance to walk are classic signs of foot rot, which matches the pre-scored likelihood and retrieved knowledge"
+        },
+        {
+          "name": "Sole Ulcer",
+          "confidence": "MEDIUM",
+          "explanation": "Another common cause of lameness with similar symptoms of limping and reluctance to bear weight"
+        },
+        {
+          "name": "White Line Disease",
+          "confidence": "MEDIUM",
+          "explanation": "Third most common cause of cattle lameness presenting with similar limping behavior"
+        }
+      ],
+      "answers": {
+        "animal_id": "CO1",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Standing but limping or reluctant to walk",
+        "hoof_signs": [
+          "None"
+        ],
+        "calving": "No recent calving",
+        "abdomen": "Slightly swollen, not sure",
+        "respiratory": [
+          "None"
+        ],
+        "udder_milk": [
+          "None"
+        ],
+        "digestive_eyes": [
+          "None"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Cannot definitively diagnose without physical hoof examination. The slight abdominal swelling mentioned is unclear and may be unrelated to the lameness issue."
     }
   ]
 }
