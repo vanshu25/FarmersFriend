@@ -1,0 +1,449 @@
+{
+  "animals": {
+    "CO1": {
+      "id": "CO1",
+      "name": "Bessie",
+      "species": "\ud83d\udc04 Cow",
+      "notes": "Holstein, pen 2",
+      "registered_at": "2025-01-10T08:00:00"
+    },
+    "CO2": {
+      "id": "CO2",
+      "name": "Duke",
+      "species": "\ud83d\udc04 Cow",
+      "notes": "Angus, pen 3",
+      "registered_at": "2025-01-12T09:00:00"
+    },
+    "CO3": {
+      "id": "CO3",
+      "name": "Millie",
+      "species": "\ud83d\udc04 Cow",
+      "notes": "Jersey, pen 1",
+      "registered_at": "2025-02-01T10:00:00"
+    },
+    "CO4": {
+      "id": "CO4",
+      "name": "Rex",
+      "species": "\ud83d\udc04 Cow",
+      "notes": "Hereford, pen 4",
+      "registered_at": "2025-02-14T11:00:00"
+    },
+    "CH1": {
+      "id": "CH1",
+      "name": "Goldie",
+      "species": "\ud83d\udc14 Chicken",
+      "notes": "Layer, coop A",
+      "registered_at": "2025-01-15T08:00:00"
+    },
+    "CH2": {
+      "id": "CH2",
+      "name": "Speckle",
+      "species": "\ud83d\udc14 Chicken",
+      "notes": "Broiler, coop B",
+      "registered_at": "2025-01-20T09:00:00"
+    },
+    "CH3": {
+      "id": "CH3",
+      "name": "Feathers",
+      "species": "\ud83d\udc14 Chicken",
+      "notes": "Layer, coop A",
+      "registered_at": "2025-03-01T10:00:00"
+    },
+    "AN7": {
+      "id": "AN7",
+      "name": "AN7",
+      "species": "Cow",
+      "notes": "",
+      "registered_at": "2026-03-07T23:11:55.875330"
+    },
+    "AN56": {
+      "id": "AN56",
+      "name": "AN56",
+      "species": "Chicken",
+      "notes": "",
+      "registered_at": "2026-03-07T23:17:11.214235"
+    }
+  },
+  "records": [
+    {
+      "record_id": "REC-DEMO-001",
+      "animal_id": "CO1",
+      "species": "\ud83d\udc04 Cow",
+      "timestamp": "2025-03-01T09:00:00",
+      "severity": "HIGH",
+      "conditions": [
+        {
+          "name": "Bovine Respiratory Disease",
+          "confidence": "HIGH",
+          "explanation": "Labored breathing, nasal discharge."
+        },
+        {
+          "name": "Pneumonia",
+          "confidence": "MEDIUM",
+          "explanation": "Secondary infection possible."
+        }
+      ],
+      "answers": {},
+      "vet_alerted": true,
+      "image_observations": "",
+      "uncertainty_note": "Lab test needed."
+    },
+    {
+      "record_id": "REC-DEMO-002",
+      "animal_id": "CO2",
+      "species": "\ud83d\udc04 Cow",
+      "timestamp": "2025-03-03T11:00:00",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Lameness",
+          "confidence": "HIGH",
+          "explanation": "Limping on rear left leg."
+        },
+        {
+          "name": "Foot Rot",
+          "confidence": "MEDIUM",
+          "explanation": "Possible hoof infection."
+        }
+      ],
+      "answers": {},
+      "vet_alerted": false,
+      "image_observations": "",
+      "uncertainty_note": ""
+    },
+    {
+      "record_id": "REC-DEMO-003",
+      "animal_id": "CO3",
+      "species": "\ud83d\udc04 Cow",
+      "timestamp": "2025-03-05T14:00:00",
+      "severity": "LOW",
+      "conditions": [
+        {
+          "name": "Mild Nutritional Deficiency",
+          "confidence": "MEDIUM",
+          "explanation": "Reduced feed intake."
+        }
+      ],
+      "answers": {},
+      "vet_alerted": false,
+      "image_observations": "",
+      "uncertainty_note": ""
+    },
+    {
+      "record_id": "REC-DEMO-004",
+      "animal_id": "CO1",
+      "species": "\ud83d\udc04 Cow",
+      "timestamp": "2025-03-10T10:00:00",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Mastitis",
+          "confidence": "HIGH",
+          "explanation": "Swollen udder, reduced milk."
+        }
+      ],
+      "answers": {},
+      "vet_alerted": false,
+      "image_observations": "",
+      "uncertainty_note": ""
+    },
+    {
+      "record_id": "REC-DEMO-005",
+      "animal_id": "CH1",
+      "species": "\ud83d\udc14 Chicken",
+      "timestamp": "2025-03-02T08:30:00",
+      "severity": "HIGH",
+      "conditions": [
+        {
+          "name": "Newcastle Disease",
+          "confidence": "HIGH",
+          "explanation": "Neurological signs, reduced egg production."
+        }
+      ],
+      "answers": {},
+      "vet_alerted": true,
+      "image_observations": "",
+      "uncertainty_note": "Contagious \u2014 isolate flock."
+    },
+    {
+      "record_id": "REC-DEMO-006",
+      "animal_id": "CH2",
+      "species": "\ud83d\udc14 Chicken",
+      "timestamp": "2025-03-06T09:00:00",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Coccidiosis",
+          "confidence": "HIGH",
+          "explanation": "Bloody droppings, lethargy."
+        }
+      ],
+      "answers": {},
+      "vet_alerted": false,
+      "image_observations": "",
+      "uncertainty_note": ""
+    },
+    {
+      "record_id": "REC-20260307231227-AN7",
+      "animal_id": "AN7",
+      "species": "Cow",
+      "timestamp": "2026-03-07T23:12:27.673762",
+      "severity": "HIGH",
+      "conditions": [
+        {
+          "name": "Bloat (Left Displaced Abomasum or Gas Bloat)",
+          "confidence": "HIGH",
+          "explanation": "Left-sided abdominal swelling in a recently calved cow is classic for bloat, especially displaced abomasum which commonly occurs after calving"
+        },
+        {
+          "name": "Post-calving digestive upset",
+          "confidence": "MEDIUM",
+          "explanation": "Recent calving can cause digestive tract displacement or gas accumulation as the cow's body readjusts"
+        },
+        {
+          "name": "Early stage ketosis with digestive complications",
+          "confidence": "LOW",
+          "explanation": "Fresh cows are at risk for metabolic disorders that can cause abdominal distension"
+        }
+      ],
+      "answers": {
+        "animal_id": "AN7",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Yes, standing and walking normally",
+        "calving": "Yes, calved within last 3 days",
+        "abdomen": "Yes, visibly swollen on the left",
+        "respiratory": [
+          "None of these"
+        ],
+        "udder_milk": [
+          "None of these"
+        ],
+        "digestive_eyes": [
+          "None of these"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "The retrieved knowledge only covers mastitis, which doesn't match these symptoms. Without specific bloat/displaced abomasum information, confidence is based on classical presentation but limited by available sources."
+    },
+    {
+      "record_id": "REC-20260307231735-AN56",
+      "animal_id": "AN56",
+      "species": "Chicken",
+      "timestamp": "2026-03-07T23:17:35.491796",
+      "severity": "HIGH",
+      "conditions": [
+        {
+          "name": "Coccidiosis",
+          "confidence": "HIGH",
+          "explanation": "Bloody droppings are a classic sign of coccidiosis, which matches the retrieved knowledge perfectly"
+        },
+        {
+          "name": "Infectious Coryza",
+          "confidence": "MEDIUM",
+          "explanation": "Facial swelling and bad odor could indicate this respiratory infection, though less common"
+        },
+        {
+          "name": "Mixed infection",
+          "confidence": "MEDIUM",
+          "explanation": "Bird may have both digestive and respiratory issues occurring together"
+        }
+      ],
+      "answers": {
+        "chicken_count": "Just one chicken",
+        "animal_id": "AN56",
+        "single_duration": "Just noticed (today)",
+        "single_respiratory": "Yes",
+        "single_resp_detail": [
+          "Facial swelling or bad odor from face"
+        ],
+        "single_digestive": "Yes",
+        "single_digest_detail": [
+          "Bloody droppings"
+        ],
+        "single_neurological": "No"
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "The combination of digestive and respiratory symptoms is unusual and could indicate multiple infections or a more serious systemic condition. Limited information available on infectious coryza from the retrieved sources."
+    },
+    {
+      "record_id": "REC-20260307232143-AN7",
+      "animal_id": "AN7",
+      "species": "Cow",
+      "timestamp": "2026-03-07T23:21:43.614035",
+      "severity": "HIGH",
+      "conditions": [
+        {
+          "name": "Bloat (Left Displaced Abomasum)",
+          "confidence": "HIGH",
+          "explanation": "Recently calved cow with visible left-sided abdominal swelling fits classic presentation of bloat or displaced abomasum"
+        },
+        {
+          "name": "Rumen Bloat (Gas Accumulation)",
+          "confidence": "MEDIUM",
+          "explanation": "Left abdominal swelling could indicate gas buildup in rumen, though cow appears otherwise normal"
+        },
+        {
+          "name": "Post-Calving Digestive Upset",
+          "confidence": "MEDIUM",
+          "explanation": "Recent calving can cause various digestive issues leading to abdominal distension"
+        }
+      ],
+      "answers": {
+        "animal_id": "AN7",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Yes, standing and walking normally",
+        "calving": "Yes, calved within last 3 days",
+        "abdomen": "Yes, visibly swollen on the left",
+        "respiratory": [
+          "None of these"
+        ],
+        "udder_milk": [
+          "None of these"
+        ],
+        "digestive_eyes": [
+          "None of these"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "The retrieved knowledge focuses only on mastitis, which doesn't match the reported symptoms. Without specific information about bloat conditions, confidence in differential diagnosis is limited despite strong clinical presentation."
+    },
+    {
+      "record_id": "REC-20260307235710-CO2",
+      "animal_id": "CO2",
+      "species": "Cow",
+      "timestamp": "2026-03-07T23:57:10.039068",
+      "severity": "HIGH",
+      "conditions": [
+        {
+          "name": "Mastitis",
+          "confidence": "HIGH",
+          "explanation": "Sudden drop in milk production in a recently calved cow strongly suggests udder infection, even without visible swelling"
+        },
+        {
+          "name": "Bovine Respiratory Disease (BRD)",
+          "confidence": "MEDIUM",
+          "explanation": "Coughing indicates respiratory involvement, could be secondary infection or stress-related"
+        },
+        {
+          "name": "Post-calving complications with secondary infections",
+          "confidence": "MEDIUM",
+          "explanation": "Recent calving makes cow vulnerable to multiple conditions; diarrhea and respiratory signs suggest systemic involvement"
+        }
+      ],
+      "answers": {
+        "animal_id": "CO2",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Yes, standing and walking normally",
+        "calving": "Yes, calved within last 3 days",
+        "abdomen": "No swelling",
+        "respiratory": [
+          "Coughing"
+        ],
+        "udder_milk": [
+          "Milk production suddenly dropped"
+        ],
+        "digestive_eyes": [
+          "Diarrhea"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "Limited knowledge retrieved about respiratory and digestive symptoms in combination with mastitis. The combination of symptoms could indicate a more complex post-calving syndrome requiring professional diagnosis."
+    },
+    {
+      "record_id": "REC-20260308000118-CO1",
+      "animal_id": "CO1",
+      "species": "Cow",
+      "timestamp": "2026-03-08T00:01:18.258469",
+      "severity": "HIGH",
+      "conditions": [
+        {
+          "name": "Bloat (Left Displaced Abomasum or Gas Bloat)",
+          "confidence": "HIGH",
+          "explanation": "Left-sided abdominal swelling in a recently calved cow is classic for bloat or displaced abomasum, especially with diarrhea present"
+        },
+        {
+          "name": "Post-calving digestive upset",
+          "confidence": "MEDIUM",
+          "explanation": "Recent calving can cause digestive disturbances leading to diarrhea and abdominal changes"
+        },
+        {
+          "name": "Early stage digestive disease (BVD/Johne's)",
+          "confidence": "LOW",
+          "explanation": "Diarrhea could indicate early viral or chronic wasting disease, but would expect more systemic signs"
+        }
+      ],
+      "answers": {
+        "animal_id": "CO1",
+        "cow_count": "Just one cow",
+        "duration": "Just noticed (today)",
+        "mobility": "Yes, standing and walking normally",
+        "calving": "Yes, calved within last 3 days",
+        "abdomen": "Yes, visibly swollen on the left",
+        "respiratory": [
+          "None of these"
+        ],
+        "udder_milk": [
+          "None of these"
+        ],
+        "digestive_eyes": [
+          "None of these",
+          "Diarrhea"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "No image provided",
+      "uncertainty_note": "The retrieved knowledge only covers mastitis, which doesn't match these symptoms. Need veterinary knowledge on bloat and post-calving digestive issues for proper assessment. Left-sided swelling in fresh cows can be serious."
+    },
+    {
+      "record_id": "REC-20260308000505-CH1",
+      "animal_id": "CH1",
+      "species": "Chicken",
+      "timestamp": "2026-03-08T00:05:05.076872",
+      "severity": "MEDIUM",
+      "conditions": [
+        {
+          "name": "Respiratory infection (viral or bacterial)",
+          "confidence": "MEDIUM",
+          "explanation": "Bird shows respiratory symptoms but comb appears normal red color, not pale as seen in coccidiosis"
+        },
+        {
+          "name": "Early stage illness",
+          "confidence": "LOW",
+          "explanation": "Single bird affected with respiratory signs but no clear visual symptoms of common diseases"
+        },
+        {
+          "name": "Coccidiosis",
+          "confidence": "LOW",
+          "explanation": "Pre-scored as possible but comb appears healthy red, contradicting typical pale comb symptom"
+        }
+      ],
+      "answers": {
+        "chicken_count": "Just one chicken",
+        "animal_id": "CH1",
+        "single_duration": "Just noticed (today)",
+        "single_respiratory": "Yes",
+        "single_resp_detail": [
+          "None of these"
+        ],
+        "single_digestive": "Not sure",
+        "single_digest_detail": [
+          "None of these"
+        ],
+        "single_neurological": "Not sure",
+        "single_neuro_detail": [
+          "None of these"
+        ]
+      },
+      "vet_alerted": false,
+      "image_observations": "White chicken with healthy-looking bright red comb and wattles. Eye appears clear and alert. No visible signs of distress, discharge, or illness in this close-up head shot. Comb color contradicts pale comb typically seen in coccidiosis.",
+      "uncertainty_note": "Limited symptom information provided - only respiratory issues mentioned without specific details. Visual examination shows healthy-appearing comb which doesn't match typical coccidiosis presentation. Need more specific respiratory symptom details and observation time."
+    }
+  ]
+}

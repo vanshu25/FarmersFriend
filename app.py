@@ -1,7 +1,8 @@
 # app.py
 # FarmGuard AI — Main Streamlit Application
 # Merged: teammate UI (farm scene, hero card, animations) +
-#         Vanshika functionality (chicken branching, glossary, photo suggestion, report card)
+#         Vanshika functionality (chicken branching, glossary, photo suggestion, report card) +
+#         Registry (species menu, per-animal dashboard, ID-prefixed triage)
 # Run with: streamlit run app.py
 
 import os
@@ -9,6 +10,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 from PIL import Image
 import io
+from datetime import datetime
 
 from dialogue import (
     ANIMALS,
@@ -22,6 +24,14 @@ from dialogue import (
     CHICKEN_NEURO_DETAIL,
 )
 from alert import build_mailto_link, simulate_alert
+from animal_registry import (
+    get_all_animals, get_animals_by_species, get_animal,
+    register_animal, update_animal, delete_animal,
+    get_or_create_animal, get_ids_for_species,
+    save_health_record, save_chat_session,
+    get_records_for_animal, get_all_records, get_recent_flags,
+    severity_emoji, format_timestamp, SPECIES_ID_PREFIX,
+)
 
 # ── Page config ───────────────────────────────────────────────────────────────
 
@@ -123,7 +133,7 @@ st.markdown("""
     margin-top: 16px;
   }
 
-  /* ── HOME: FARM SCENE (teammate's UI) ── */
+  /* ── HOME: FARM SCENE ── */
   .stApp {
     background: linear-gradient(180deg, #87CEEB 0%, #b8e4f7 35%, #c8efc0 60%, #8bc34a 100%) !important;
   }
@@ -257,15 +267,18 @@ st.markdown("""
 def init_state():
     defaults = {
         "screen": "home",
-        "selected_animal": None,
-        "chicken_type": None,       # "single" or "flock"
-        "current_question": 0,
+        "selected_animal": None,        # "Cow" | "Chicken"
+        "chicken_type": None,           # "single" | "flock"
+        "current_question": 0,          # 0 = animal ID step, 1+ = symptom questions
         "answers": {},
         "questions": [],
         "uploaded_image": None,
         "triage_result": None,
         "vet_email": "vet@example.com",
         "judge_mode": False,
+        # ── Registry additions ──
+        "selected_animal_id": None,     # e.g. "CO3" or "CH1"
+        "record_saved": False,          # guard against double-saving
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -284,7 +297,29 @@ def go_home():
     st.session_state.questions = []
     st.session_state.uploaded_image = None
     st.session_state.triage_result = None
+    st.session_state.selected_animal_id = None
+    st.session_state.record_saved = False
     st.rerun()
+
+
+# Maps the short animal key used in this app ("Cow", "Chicken") to the
+# registry species key used in animal_registry.py ("CO", "CH")
+_ANIMAL_KEY_TO_SPECIES = {
+    "Cow":     "Cow",
+    "Chicken": "Chicken",
+}
+
+# Maps short animal key → ID prefix for display ("CO", "CH")
+_ANIMAL_KEY_TO_PREFIX = {
+    "Cow":     "CO",
+    "Chicken": "CH",
+}
+
+# Maps short animal key → human label for the ID prompt
+_ANIMAL_KEY_TO_LABEL = {
+    "Cow":     "Cattle",
+    "Chicken": "Chicken",
+}
 
 
 SEVERITY_COLORS = {
@@ -413,7 +448,7 @@ def photo_was_suggested_by_answers(answers: dict) -> tuple:
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# SCREEN 1: HOME — Farm scene (teammate's UI)
+# SCREEN 1: HOME — Farm scene
 # ═════════════════════════════════════════════════════════════════════════════
 
 def screen_home():
@@ -427,7 +462,7 @@ def screen_home():
         if st.session_state.judge_mode:
             st.info("🧪 Judge mode: Uses cached responses, no API key needed.")
 
-    # Farm background scene
+    # Farm background scene — unchanged
     st.markdown("""
     <div class="farm-scene">
       <div class="sun"></div>
@@ -454,7 +489,7 @@ def screen_home():
     </div>
     """, unsafe_allow_html=True)
 
-    # Hero card
+    # Hero card — unchanged
     st.markdown("""
     <div class="hero-card">
       <div class="welcome-text">Welcome to</div>
@@ -465,28 +500,20 @@ def screen_home():
     </div>
     """, unsafe_allow_html=True)
 
-    # Animal buttons — teammate's style, Vanshika's routing logic
+    # ── CHANGED: both buttons now go to species_menu instead of directly
+    #    to dialogue / chicken_type
     col1, col2 = st.columns(2)
 
     with col1:
         if st.button("🐮  Cattle", key="btn_cow", use_container_width=True):
             st.session_state.selected_animal = "Cow"
-            st.session_state.answers = {}
-            st.session_state.current_question = 0
-            st.session_state.triage_result = None
-            st.session_state.uploaded_image = None
-            st.session_state.questions = get_questions_for_animal("Cow")
-            st.session_state.screen = "dialogue"
+            st.session_state.screen = "species_menu"
             st.rerun()
 
     with col2:
         if st.button("🐣  Chicken", key="btn_chicken", use_container_width=True):
             st.session_state.selected_animal = "Chicken"
-            st.session_state.answers = {}
-            st.session_state.current_question = 0
-            st.session_state.triage_result = None
-            st.session_state.uploaded_image = None
-            st.session_state.screen = "chicken_type"
+            st.session_state.screen = "species_menu"
             st.rerun()
 
     st.markdown("""
@@ -498,78 +525,278 @@ def screen_home():
 
 
 # ═════════════════════════════════════════════════════════════════════════════
-# SCREEN 1b: CHICKEN TYPE SELECTION
+# SCREEN 1b: SPECIES MENU — Dashboard or Triage
+# NEW SCREEN — did not exist before
 # ═════════════════════════════════════════════════════════════════════════════
 
-def screen_chicken_type():
-    st.markdown("""
-    <div style="text-align:center; padding:16px 0 24px 0;">
-      <h2 style="font-weight:800; color:#2d4a1e;">Chicken Health Check</h2>
-      <p style="color:#6b7c61; font-size:16px;">Is this about one chicken or a group?</p>
-    </div>
-    """, unsafe_allow_html=True)
+def screen_species_menu():
+    animal_key = st.session_state.selected_animal   # "Cow" | "Chicken"
+    emoji      = "🐄" if animal_key == "Cow" else "🐔"
+    label      = "Cattle" if animal_key == "Cow" else "Chicken"
 
     col_back, _ = st.columns([1, 4])
     with col_back:
-        if st.button("← Back"):
+        if st.button("← Back", key="sm_back"):
             go_home()
 
-    st.markdown("<br>", unsafe_allow_html=True)
-    col1, col2 = st.columns(2)
+    st.markdown(f"""
+    <div style="text-align:center; padding:24px 0 16px;">
+      <div style="font-size:56px;">{emoji}</div>
+      <div style="font-size:26px; font-weight:800; color:#2d4a1e; margin-top:6px;">{label}</div>
+      <div style="font-size:14px; color:#7a9a6a; margin-top:4px;">What would you like to do?</div>
+    </div>
+    """, unsafe_allow_html=True)
 
+    col1, col2 = st.columns(2, gap="medium")
+
+    # ── Card 1: Health Dashboard ──────────────────────────────────────────────
     with col1:
-        st.markdown("""
+        st.markdown(f"""
         <div class="type-card">
-          <div style="font-size:48px; margin-bottom:12px;">🐔</div>
-          <div style="font-size:20px; font-weight:700; color:#2d4a1e;">One Chicken</div>
-          <div style="color:#6b7c61; font-size:14px; margin-top:8px;">
-            Checking a single bird for respiratory, digestive, or neurological issues
+          <div style="font-size:42px; margin-bottom:10px;">📊</div>
+          <div style="font-size:19px; font-weight:800; color:#2d4a1e;">Health Dashboard</div>
+          <div style="color:#6b7c61; font-size:13px; margin-top:8px;">
+            Analytics &amp; history for all registered {label.lower()}s
           </div>
         </div>
         """, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("Single chicken", use_container_width=True, key="btn_single"):
-            st.session_state.chicken_type = "single"
-            st.session_state.answers = {"chicken_count": "Just one chicken"}
-            st.session_state.questions = build_chicken_questions("single")
-            st.session_state.current_question = 0
-            st.session_state.screen = "dialogue"
+        if st.button("View Dashboard →", key="go_dashboard", use_container_width=True, type="primary"):
+            st.session_state.screen = "dashboard"
             st.rerun()
 
+    # ── Card 2: QnA / Triage ─────────────────────────────────────────────────
     with col2:
-        st.markdown("""
+        st.markdown(f"""
         <div class="type-card">
-          <div style="font-size:48px; margin-bottom:12px;">🐔🐔🐔</div>
-          <div style="font-size:20px; font-weight:700; color:#2d4a1e;">Multiple Chickens</div>
-          <div style="color:#6b7c61; font-size:14px; margin-top:8px;">
-            Several or many birds showing symptoms — possible outbreak
+          <div style="font-size:42px; margin-bottom:10px;">🩺</div>
+          <div style="font-size:19px; font-weight:800; color:#2d4a1e;">QnA / Triage</div>
+          <div style="color:#6b7c61; font-size:13px; margin-top:8px;">
+            Guided symptom check{"" if animal_key == "Cow" else " — single bird or flock"}
           </div>
         </div>
         """, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
-        if st.button("Multiple chickens", use_container_width=True, key="btn_flock"):
-            st.session_state.chicken_type = "flock"
-            st.session_state.answers = {"chicken_count": "Multiple chickens"}
-            st.session_state.questions = build_chicken_questions("flock")
-            st.session_state.current_question = 0
-            st.session_state.screen = "dialogue"
+
+        if animal_key == "Cow":
+            # Single button — straight to dialogue (ID question is step 0 inside)
+            if st.button("Start Triage →", key="go_triage_cow", use_container_width=True, type="primary"):
+                st.session_state.answers = {}
+                st.session_state.current_question = 0
+                st.session_state.triage_result = None
+                st.session_state.uploaded_image = None
+                st.session_state.selected_animal_id = None
+                st.session_state.record_saved = False
+                st.session_state.questions = get_questions_for_animal("Cow")
+                st.session_state.screen = "dialogue"
+                st.rerun()
+        else:
+            # Chicken: two sub-buttons (Single / Flock)
+            # Single chicken → dialogue with ID question injected as step 0
+            # Flock → chicken_type screen (existing flow, no ID question)
+            c1, c2 = st.columns(2, gap="small")
+            with c1:
+                if st.button("🐔 Single", key="go_single_chicken", use_container_width=True, type="primary"):
+                    st.session_state.chicken_type = "single"
+                    st.session_state.answers = {"chicken_count": "Just one chicken"}
+                    st.session_state.current_question = 0
+                    st.session_state.triage_result = None
+                    st.session_state.uploaded_image = None
+                    st.session_state.selected_animal_id = None
+                    st.session_state.record_saved = False
+                    st.session_state.questions = build_chicken_questions("single")
+                    st.session_state.screen = "dialogue"
+                    st.rerun()
+            with c2:
+                if st.button("🐔🐔 Flock", key="go_flock_chicken", use_container_width=True):
+                    # Flock goes through original chicken_type flow (no ID tracking)
+                    st.session_state.chicken_type = "flock"
+                    st.session_state.answers = {"chicken_count": "Multiple chickens"}
+                    st.session_state.current_question = 0
+                    st.session_state.triage_result = None
+                    st.session_state.uploaded_image = None
+                    st.session_state.selected_animal_id = None
+                    st.session_state.record_saved = False
+                    st.session_state.questions = build_chicken_questions("flock")
+                    st.session_state.screen = "dialogue"
+                    st.rerun()
+
+
+# ═════════════════════════════════════════════════════════════════════════════
+# SCREEN 1c: DASHBOARD — Per-species analytics
+# NEW SCREEN — did not exist before
+# ═════════════════════════════════════════════════════════════════════════════
+
+def screen_dashboard():
+    animal_key = st.session_state.selected_animal   # "Cow" | "Chicken"
+    prefix     = _ANIMAL_KEY_TO_PREFIX[animal_key]  # "CO" | "CH"
+    label      = "Cattle" if animal_key == "Cow" else "Chicken"
+    emoji      = "🐄" if animal_key == "Cow" else "🐔"
+
+    col_back, _ = st.columns([1, 4])
+    with col_back:
+        if st.button("← Back", key="dash_back"):
+            st.session_state.screen = "species_menu"
             st.rerun()
+
+    st.markdown(f"""
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:20px;">
+      <span style="font-size:40px;">{emoji}</span>
+      <div>
+        <div style="font-weight:800; font-size:22px; color:#2d4a1e;">{label} Health Dashboard</div>
+        <div style="color:#6b7c61; font-size:13px;">Analytics &amp; health history for all registered {label.lower()}s</div>
+      </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    # Pull data: only animals whose ID starts with this prefix (CO / CH)
+    all_animals = {k: v for k, v in get_all_animals().items() if k.startswith(prefix)}
+    all_records = [
+        r for r in get_all_records()
+        if r.get("animal_id", "").startswith(prefix) and r.get("type") != "chat"
+    ]
+
+    if not all_animals:
+        st.info(f"No {label.lower()}s registered yet. Run a triage check to add one automatically.")
+        return
+
+    # ── Summary stat cards ────────────────────────────────────────────────────
+    total    = len(all_animals)
+    checks   = len(all_records)
+    critical = sum(1 for r in all_records if r["severity"] in ("HIGH", "CRITICAL"))
+    vet_alerted = sum(1 for r in all_records if r.get("vet_alerted"))
+
+    col1, col2, col3, col4 = st.columns(4)
+    for col, lbl, val, color in [
+        (col1, f"Total {label}s", total,       "#2d4a1e"),
+        (col2, "Total Checks",   checks,      "#5a8a3c"),
+        (col3, "High / Critical",critical,    "#842029"),
+        (col4, "Vet Alerts",     vet_alerted, "#856404"),
+    ]:
+        with col:
+            st.markdown(f"""
+            <div style="background:white; border-radius:14px; padding:16px 10px; text-align:center;
+                        border:1.5px solid #e0d5c5; box-shadow:0 2px 8px rgba(0,0,0,0.05);">
+              <div style="font-size:28px; font-weight:800; color:{color};">{val}</div>
+              <div style="font-size:11px; color:#7a9a6a; font-weight:600; margin-top:2px;">{lbl}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── Per-animal status table ───────────────────────────────────────────────
+    st.markdown("#### 🐾 Animal Status")
+
+    sev_colors = {"LOW":"#155724","MEDIUM":"#856404","HIGH":"#842029","CRITICAL":"#842029","—":"#aaa"}
+    sev_bgs    = {"LOW":"#d4edda","MEDIUM":"#fff3cd","HIGH":"#f8d7da","CRITICAL":"#f8d7da","—":"#f5f5f5"}
+
+    header = st.columns([1, 2, 2, 2, 3, 2])
+    for col, h in zip(header, ["ID", "Name", "Last Check", "Severity", "Top Condition", "Vet Alerted"]):
+        with col:
+            st.markdown(
+                f"<div style='font-size:11px;font-weight:700;color:#7a9a6a;"
+                f"text-transform:uppercase;padding:4px 0;'>{h}</div>",
+                unsafe_allow_html=True,
+            )
+    st.markdown("<hr style='margin:4px 0 8px; border-color:#e0d5c5;'>", unsafe_allow_html=True)
+
+    def _sort_key(aid):
+        num_part = aid[len(prefix):]
+        return int(num_part) if num_part.isdigit() else 0
+
+    for aid in sorted(all_animals.keys(), key=_sort_key):
+        animal  = all_animals[aid]
+        recs    = sorted(
+            [r for r in all_records if r["animal_id"] == aid],
+            key=lambda r: r["timestamp"], reverse=True,
+        )
+        last    = recs[0] if recs else None
+        sev     = last["severity"] if last else "—"
+        top_cond = last["conditions"][0]["name"] if last and last.get("conditions") else "No records"
+        vet_flag = "✅" if last and last.get("vet_alerted") else "—"
+        last_ts  = format_timestamp(last["timestamp"]).split("  ")[0] if last else "Never"
+        tc = sev_colors.get(sev, "#aaa"); bg = sev_bgs.get(sev, "#f5f5f5")
+
+        row = st.columns([1, 2, 2, 2, 3, 2])
+        with row[0]:
+            st.markdown(f"<div style='font-weight:700;color:#2d4a1e;padding:6px 0;'>{aid}</div>",
+                        unsafe_allow_html=True)
+        with row[1]:
+            st.markdown(f"<div style='padding:6px 0;color:#1a1a1a;'>{animal['name']}</div>",
+                        unsafe_allow_html=True)
+        with row[2]:
+            st.markdown(f"<div style='padding:6px 0;font-size:12px;color:#6b7c61;'>{last_ts}</div>",
+                        unsafe_allow_html=True)
+        with row[3]:
+            st.markdown(
+                f"<div style='padding:4px 0;'>"
+                f"<span style='background:{bg};color:{tc};padding:2px 10px;"
+                f"border-radius:12px;font-size:11px;font-weight:700;'>{sev}</span></div>",
+                unsafe_allow_html=True,
+            )
+        with row[4]:
+            display_cond = top_cond[:36] + ("…" if len(top_cond) > 36 else "")
+            st.markdown(f"<div style='padding:6px 0;font-size:12px;color:#1a1a1a;'>{display_cond}</div>",
+                        unsafe_allow_html=True)
+        with row[5]:
+            st.markdown(f"<div style='padding:6px 0;text-align:center;'>{vet_flag}</div>",
+                        unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── Recent records timeline ───────────────────────────────────────────────
+    st.markdown("#### 📋 Recent Health Records")
+    if not all_records:
+        st.markdown("<span style='color:#aaa;'>No records yet.</span>", unsafe_allow_html=True)
+        return
+
+    for rec in all_records[:10]:
+        sev  = rec["severity"]
+        tc   = sev_colors.get(sev, "#333"); bg = sev_bgs.get(sev, "#eee")
+        conds = ", ".join(c["name"] for c in rec.get("conditions", [])[:2])
+        vet_tag = "  🏥 Vet alerted" if rec.get("vet_alerted") else ""
+        animal_name = all_animals.get(rec["animal_id"], {}).get("name", rec["animal_id"])
+        st.markdown(f"""
+        <div style="background:{bg}; border-radius:10px; padding:10px 16px; margin-bottom:6px;
+                    border-left:4px solid {tc}60; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <span style="font-weight:700; color:{tc};">{rec['animal_id']} — {animal_name}</span>
+            <span style="background:{bg}; color:{tc}; border:1px solid {tc}40; padding:1px 8px;
+                         border-radius:10px; font-size:11px; font-weight:700; margin-left:8px;">{sev}</span>
+            <div style="font-size:12px; color:{tc}; margin-top:3px;">{conds}{vet_tag}</div>
+          </div>
+          <div style="font-size:11px; color:{tc}; opacity:0.75; text-align:right; white-space:nowrap;">
+            {format_timestamp(rec['timestamp'])}
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 
 # ═════════════════════════════════════════════════════════════════════════════
 # SCREEN 2: DIALOGUE — Guided Symptom Questions
+# CHANGED: q_idx 0 is now the animal ID step; symptom questions start at q_idx 1
 # ═════════════════════════════════════════════════════════════════════════════
 
 def screen_dialogue():
-    animal = ANIMALS[st.session_state.selected_animal]
-    questions = st.session_state.questions
-    q_idx = st.session_state.current_question
+    animal_key = st.session_state.selected_animal   # "Cow" | "Chicken"
+    animal     = ANIMALS[animal_key]
+    questions  = st.session_state.questions
+    q_idx      = st.session_state.current_question
 
-    total = len(questions) + 1
-    progress = min(q_idx / max(total, 1), 1.0)
+    prefix     = _ANIMAL_KEY_TO_PREFIX.get(animal_key, "")
+    id_label   = _ANIMAL_KEY_TO_LABEL.get(animal_key, animal["label"])
+
+    # Flock chickens skip ID step entirely (no individual tracking)
+    has_id_step = not (animal_key == "Chicken" and st.session_state.chicken_type == "flock")
+
+    # Total steps = (1 ID step if applicable) + symptom questions + 1 photo step
+    total   = len(questions) + (2 if has_id_step else 1)
+    # Display progress: shift by 1 when there's an ID step
+    display_idx = q_idx if has_id_step else q_idx
+    progress    = min(display_idx / max(total, 1), 1.0)
 
     chicken_type_label = ""
-    if st.session_state.selected_animal == "Chicken":
+    if animal_key == "Chicken":
         chicken_type_label = " · " + (
             "Single Bird" if st.session_state.chicken_type == "single" else "Flock"
         )
@@ -581,7 +808,7 @@ def screen_dialogue():
           {animal['label']} Health Check{chicken_type_label}
         </div>
         <div style="color:#6b7c61; font-size:14px;">
-          Question {min(q_idx+1, total)} of {total}
+          Question {min(display_idx + 1, total)} of {total}
         </div>
       </div>
     </div>
@@ -595,17 +822,56 @@ def screen_dialogue():
             if q_idx > 0:
                 st.session_state.current_question -= 1
                 st.rerun()
-            elif st.session_state.selected_animal == "Chicken":
-                st.session_state.screen = "chicken_type"
-                st.rerun()
             else:
-                go_home()
+                # Go back to species_menu regardless of animal type
+                st.session_state.screen = "species_menu"
+                st.rerun()
 
     st.markdown("<br>", unsafe_allow_html=True)
 
+    # ── STEP 0 (ID step): only for Cow and single Chicken ────────────────────
+    if has_id_step and q_idx == 0:
+
+        st.markdown(f"""
+        <div class="question-box">
+          <div style="font-size:13px; color:#6b7c61; margin-bottom:4px;">QUESTION 1 — Animal Identification</div>
+          <div style="font-size:18px; font-weight:700; color:#2d4a1e;">Enter the {id_label} ID number</div>
+          <div style="font-size:13px; color:#7a9a6a; margin-top:6px;">
+            Type a number (e.g. <strong>1</strong>) and the ID becomes <strong>{prefix}1</strong>.
+            Pick an existing animal or enter a new number to register automatically.
+          </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        num_input = st.number_input(
+            f"Enter {id_label} ID number",
+            min_value=1, max_value=9999, value=1, step=1,
+            label_visibility="visible",
+        )
+        preview_id = f"{prefix}{int(num_input)}"
+        existing_animal = get_animal(preview_id)
+
+        if existing_animal:
+            st.markdown(f"✅ **{preview_id}** — *{existing_animal['name']}* (existing animal, history will be updated)")
+        else:
+            st.markdown(f"🆕 **{preview_id}** — New animal, will be registered automatically")
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("Confirm ID & continue →", type="primary", use_container_width=True, key="confirm_id"):
+            animal_id = get_or_create_animal(animal_key, int(num_input))
+            st.session_state.selected_animal_id = animal_id
+            st.session_state.answers["animal_id"] = animal_id
+            st.session_state.current_question = 1
+            st.rerun()
+        return
+
+    # ── Determine symptom question index ─────────────────────────────────────
+    # When has_id_step: q_idx 0 = ID (handled above), q_idx 1..N = questions[0..N-1]
+    # When no ID step:  q_idx 0..N-1 = questions[0..N-1] (flock, unchanged)
+    symptom_idx = (q_idx - 1) if has_id_step else q_idx
+
     # ── Photo upload step ─────────────────────────────────────────────────────
-    if q_idx >= len(questions):
-        # Feature: contextual photo suggestion
+    if symptom_idx >= len(questions):
         should_suggest, reason = photo_was_suggested_by_answers(st.session_state.answers)
 
         if should_suggest:
@@ -653,19 +919,19 @@ def screen_dialogue():
                 st.rerun()
         return
 
-    # ── Question step ─────────────────────────────────────────────────────────
-    q = questions[q_idx]
+    # ── Symptom question step ─────────────────────────────────────────────────
+    q         = questions[symptom_idx]
     photo_hint = q.get("photo_hint", False)
+    display_q_num = q_idx + 1   # human-readable (1-based, includes ID step if present)
 
     st.markdown(f"""
     <div class="question-box">
-      <div style="font-size:13px; color:#6b7c61; margin-bottom:4px;">QUESTION {q_idx + 1}</div>
+      <div style="font-size:13px; color:#6b7c61; margin-bottom:4px;">QUESTION {display_q_num}</div>
       <div style="font-size:18px; font-weight:700; color:#2d4a1e;">{q['question']}</div>
       {"<div style='font-size:13px; color:#5a8a3c; margin-top:6px;'>📸 A photo can help here if you have one</div>" if photo_hint else ""}
     </div>
     """, unsafe_allow_html=True)
 
-    # Feature: glossary
     render_glossary_expander(q["question"])
 
     # ── Single select ─────────────────────────────────────────────────────────
@@ -678,13 +944,13 @@ def screen_dialogue():
             st.session_state.answers[q["id"]] = answer
             st.session_state.current_question += 1
 
-            if q["id"] == "mobility" and st.session_state.selected_animal == "Cow":
+            if q["id"] == "mobility" and animal_key == "Cow":
                 st.session_state.questions = maybe_insert_hoof_question(
                     st.session_state.questions,
                     st.session_state.answers,
-                    st.session_state.current_question - 1,
+                    symptom_idx,
                 )
-            if st.session_state.selected_animal == "Chicken" and st.session_state.chicken_type == "single":
+            if animal_key == "Chicken" and st.session_state.chicken_type == "single":
                 st.session_state.questions = insert_chicken_detail_if_needed(
                     st.session_state.questions,
                     st.session_state.answers,
@@ -713,6 +979,7 @@ def screen_dialogue():
 
 # ═════════════════════════════════════════════════════════════════════════════
 # SCREEN 3: RESULT — Triage Card
+# CHANGED: shows animal ID badge in header; auto-saves record to registry
 # ═════════════════════════════════════════════════════════════════════════════
 
 JUDGE_MODE_CACHE = {
@@ -740,7 +1007,8 @@ JUDGE_MODE_CACHE = {
 
 
 def screen_result():
-    animal = ANIMALS[st.session_state.selected_animal]
+    animal_key = st.session_state.selected_animal
+    animal     = ANIMALS[animal_key]
 
     if st.session_state.triage_result is None:
         if st.session_state.judge_mode:
@@ -750,7 +1018,7 @@ def screen_result():
             st.session_state.triage_result = JUDGE_MODE_CACHE
         else:
             symptom_summary = format_answers_for_prompt(
-                st.session_state.selected_animal,
+                animal_key,
                 st.session_state.answers,
             )
             with st.spinner("🔍 Retrieving knowledge and analyzing symptoms..."):
@@ -773,26 +1041,56 @@ def screen_result():
                         st.rerun()
                     return
 
-    r = st.session_state.triage_result
+    r        = st.session_state.triage_result
     severity = r.get("severity", "MEDIUM").upper()
     escalate = r.get("escalate_to_vet", False)
     sev_color, sev_bg = SEVERITY_COLORS.get(severity, ("#333", "#eee"))
 
+    # ── Auto-save to registry (runs once per result) ──────────────────────────
+    animal_id = st.session_state.get("selected_animal_id")
+    if animal_id and not st.session_state.get("record_saved"):
+        try:
+            save_health_record(
+                animal_id=animal_id,
+                species_key=animal_key,
+                severity=severity,
+                conditions=r.get("likely_conditions", []),
+                answers=st.session_state.answers,
+                vet_alerted=False,
+                image_observations=r.get("image_observations", ""),
+                uncertainty_note=r.get("uncertainty_note", ""),
+            )
+            st.session_state.record_saved = True
+        except Exception:
+            pass  # Don't crash the result screen if registry write fails
+
     chicken_label = ""
-    if st.session_state.selected_animal == "Chicken" and st.session_state.chicken_type:
+    if animal_key == "Chicken" and st.session_state.chicken_type:
         chicken_label = f" · {'Single Bird' if st.session_state.chicken_type == 'single' else 'Flock'}"
 
-    # Header
+    # ── Header — shows animal ID badge if one was selected ────────────────────
+    animal_id_badge = ""
+    if animal_id:
+        linked = get_animal(animal_id)
+        name_str = f" {linked['name']}" if linked else ""
+        animal_id_badge = (
+            f"<span style='background:#e8f5e0; color:#2d4a1e; font-size:12px; font-weight:700;"
+            f"padding:2px 10px; border-radius:12px; margin-left:8px;'>"
+            f"{animal_id}{name_str}</span>"
+        )
+
     st.markdown(f"""
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
       <div>
-        <div style="font-weight:800; font-size:22px; color:#2d4a1e;">Triage Assessment</div>
+        <div style="font-weight:800; font-size:22px; color:#2d4a1e;">
+          Triage Assessment{animal_id_badge}
+        </div>
         <div style="color:#6b7c61; font-size:13px;">{animal['label']}{chicken_label} · AI-assisted recommendation</div>
       </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Severity banner
+    # Severity banner — unchanged
     icon = "🚨" if severity in ["HIGH", "CRITICAL"] else "⚠️" if severity == "MEDIUM" else "✅"
     st.markdown(f"""
     <div style="background:{sev_bg}; border:1px solid {sev_color}40; border-radius:12px;
@@ -805,7 +1103,7 @@ def screen_result():
     </div>
     """, unsafe_allow_html=True)
 
-    # Possible conditions
+    # Possible conditions — unchanged
     st.markdown("#### 🩺 Possible Conditions")
     for condition in r.get("likely_conditions", []):
         conf = condition.get("confidence", "?")
@@ -823,7 +1121,7 @@ def screen_result():
         </div>
         """, unsafe_allow_html=True)
 
-    # Immediate actions
+    # Immediate actions — unchanged
     st.markdown("#### ✅ What to do right now")
     for i, action in enumerate(r.get("immediate_actions", []), 1):
         st.markdown(f"""
@@ -836,7 +1134,7 @@ def screen_result():
         </div>
         """, unsafe_allow_html=True)
 
-    # Photo observations
+    # Photo observations — unchanged
     img_obs = r.get("image_observations", "")
     if img_obs and img_obs != "No image provided" and st.session_state.uploaded_image:
         st.markdown("#### 📸 Photo Analysis")
@@ -851,7 +1149,7 @@ def screen_result():
             </div>
             """, unsafe_allow_html=True)
 
-    # Uncertainty
+    # Uncertainty — unchanged
     if r.get("uncertainty_note"):
         st.markdown(f"""
         <div style="background:#f8f6f0; border-left:3px solid #aaa; border-radius:0 8px 8px 0;
@@ -860,14 +1158,14 @@ def screen_result():
         </div>
         """, unsafe_allow_html=True)
 
-    # Sources
+    # Sources — unchanged
     sources = r.get("cited_sources", [])
     if sources:
         st.markdown("#### 📚 Sources used")
         sources_html = " ".join(f'<span class="source-tag">{s}</span>' for s in sources)
         st.markdown(f'<div>{sources_html}</div>', unsafe_allow_html=True)
 
-    # Vet alert
+    # Vet alert section — unchanged
     if escalate or severity in ["HIGH", "CRITICAL"]:
         st.markdown("""
         <div style="background:#fff0f0; border:2px solid #dc3545; border-radius:14px; padding:20px; margin-top:16px;">
@@ -908,32 +1206,32 @@ def screen_result():
             with st.expander("👁️ Preview vet message"):
                 st.text_area("Message preview:", value=r.get("vet_summary", ""), height=150, disabled=True)
 
-        # ── Feature: Farm Incident Report ────────────────────────────────────
+        # Farm Incident Report — unchanged, but now includes animal ID in ANIMAL row
         st.markdown("<br>", unsafe_allow_html=True)
 
         animal_label = animal["label"]
         chicken_report_label = ""
-        if st.session_state.selected_animal == "Chicken" and st.session_state.chicken_type:
+        if animal_key == "Chicken" and st.session_state.chicken_type:
             chicken_report_label = f" ({'Single Bird' if st.session_state.chicken_type == 'single' else 'Flock'})"
+
+        id_report_str = f" · ID: {animal_id}" if animal_id else ""
 
         answers = st.session_state.answers
         symptom_lines = []
         for key, val in answers.items():
-            if key == "chicken_count":
+            if key in ("chicken_count", "animal_id"):
                 continue
-            label = key.replace("_", " ").replace("flock ", "").replace("single ", "").title()
+            lbl = key.replace("_", " ").replace("flock ", "").replace("single ", "").title()
             display = ", ".join(val) if isinstance(val, list) else val
             if display and display not in ("None", "None of these"):
-                symptom_lines.append(f"<li><strong>{label}:</strong> {display}</li>")
+                symptom_lines.append(f"<li><strong>{lbl}:</strong> {display}</li>")
 
         conditions_html = "".join(
             f"<li>{c['name']} <span style='color:#6b7c61;font-size:13px;'>({c.get('confidence','?')} confidence)</span></li>"
             for c in r.get("likely_conditions", [])
         )
         symptoms_html = "".join(symptom_lines) if symptom_lines else "<li>No specific symptoms recorded</li>"
-
-        import datetime
-        report_date = datetime.datetime.now().strftime("%B %d, %Y at %I:%M %p")
+        report_date   = datetime.now().strftime("%B %d, %Y at %I:%M %p")
 
         st.markdown(f"""
         <div style="background:white; border:1.5px solid #e0d5c5; border-radius:14px;
@@ -950,7 +1248,7 @@ def screen_result():
           </div>
           <div style="border-top:1px solid #f0ebe0; padding-top:14px; margin-bottom:14px;">
             <div style="font-size:13px; font-weight:700; color:#6b7c61; letter-spacing:0.05em; margin-bottom:8px;">ANIMAL</div>
-            <div style="color:#2d4a1e; font-size:15px;">{animal_label}{chicken_report_label}</div>
+            <div style="color:#2d4a1e; font-size:15px;">{animal_label}{chicken_report_label}{id_report_str}</div>
           </div>
           <div style="border-top:1px solid #f0ebe0; padding-top:14px; margin-bottom:14px;">
             <div style="font-size:13px; font-weight:700; color:#6b7c61; letter-spacing:0.05em; margin-bottom:8px;">SYMPTOMS REPORTED</div>
@@ -972,7 +1270,7 @@ def screen_result():
         </div>
         """, unsafe_allow_html=True)
 
-    # Navigation
+    # Navigation — unchanged
     st.markdown("<br>", unsafe_allow_html=True)
     col1, col2 = st.columns(2)
     with col1:
@@ -980,15 +1278,18 @@ def screen_result():
             go_home()
     with col2:
         if st.button("📋 New check (same animal)", use_container_width=True):
-            if st.session_state.selected_animal == "Chicken":
-                st.session_state.screen = "chicken_type"
-            else:
-                st.session_state.questions = get_questions_for_animal(st.session_state.selected_animal)
-                st.session_state.screen = "dialogue"
             st.session_state.answers = {}
             st.session_state.current_question = 0
             st.session_state.triage_result = None
             st.session_state.uploaded_image = None
+            st.session_state.selected_animal_id = None
+            st.session_state.record_saved = False
+            if animal_key == "Chicken":
+                # Go back to species_menu so they can choose Single/Flock again
+                st.session_state.screen = "species_menu"
+            else:
+                st.session_state.questions = get_questions_for_animal(animal_key)
+                st.session_state.screen = "dialogue"
             st.rerun()
 
     if st.session_state.judge_mode:
@@ -1007,8 +1308,12 @@ screen = st.session_state.get("screen", "home")
 
 if screen == "home":
     screen_home()
-elif screen == "chicken_type":
-    screen_chicken_type()
+elif screen == "species_menu":       # NEW
+    screen_species_menu()
+elif screen == "dashboard":          # NEW
+    screen_dashboard()
+elif screen == "chicken_type":       # kept for any direct references
+    screen_species_menu()            # redirect to species_menu
 elif screen == "dialogue":
     screen_dialogue()
 elif screen == "result":
