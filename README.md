@@ -235,7 +235,7 @@ This creates `./chroma_db/` with embedded document chunks. Skip this step if `ch
 ### 2. Set your API key
 
 ```bash
-export ANTHROPIC_API_KEY="sk-ant-your-key-here"
+export ANTHROPIC_API_KEY="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"
 ```
 
 Or add it to a `.env` file / Streamlit secrets (for cloud deployment).
